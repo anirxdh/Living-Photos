@@ -43,13 +43,12 @@ input/
 .idea/
 .vscode/
 
-# Vendor — kept local for reference but not committed (we extract what we need)
-vendor/image-blaster/.git/
-vendor/image-blaster/node_modules/
-vendor/image-blaster/app/node_modules/
-vendor/image-blaster/app/dist/
-vendor/image-blaster/worlds/
-vendor/image-blaster/input/
+# Vendor — entire dir is reference-only (the parts we keep get extracted into lib/)
+vendor/
+
+# Build info
+tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # GSD planning artifacts that shouldn't be committed
 .planning/_drafts/

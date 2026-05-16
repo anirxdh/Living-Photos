@@ -1,10 +1,9 @@
 /**
  * ElevenLabs SFX adapter — prompt → looping ambient mp3.
  *
- * Real delegates to `lib/image-blaster/sfx.ts` (ported from the open-source
- * image-blaster pipeline — see NOTICE.md for MIT attribution). The MP3 bytes
- * are returned as a base64 data URL today; production callers should pipe the
- * ArrayBuffer through the BlobAdapter and store the public URL on the scene.
+ * Real delegates to `lib/image-blaster/sfx.ts`. The MP3 bytes are returned as
+ * a base64 data URL today; production callers should pipe the ArrayBuffer
+ * through the BlobAdapter and store the public URL on the scene.
  */
 import { generateElevenSfx } from "@/lib/image-blaster/sfx";
 import type { SfxAdapter, SfxInput, SfxOutput } from "./types";

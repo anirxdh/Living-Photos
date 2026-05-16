@@ -24,11 +24,12 @@ following terms.
    (f) re-publish the Software, its compiled artifacts, its UI text, its
        brand identity, or its visual design under any other name or license.
 
-3. THIRD-PARTY COMPONENTS
-   Portions of `lib/image-blaster/` are derived from the open-source project
-   "image-blaster" by Neilson Koerner-Safrata, distributed under the MIT
-   License. Those portions remain subject to the MIT License; see NOTICE.md
-   for the full attribution. All other source code in this repository is
+3. THIRD-PARTY SERVICES
+   This Software orchestrates several third-party APIs (World Labs, fal.ai,
+   ElevenLabs, Stripe, Vercel, Inngest, Neon, Resend, Sentry, Hedra). All
+   trademarks and service marks named therein are property of their
+   respective owners. See NOTICE.md for the full list. The orchestration
+   logic, prompts, interfaces, and all source code in this repository are
    governed exclusively by this License.
 
 4. NO WARRANTY

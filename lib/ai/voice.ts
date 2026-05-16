@@ -1,9 +1,8 @@
 /**
  * ElevenLabs voice adapter — Instant Voice Cloning (IVC) + narration TTS.
  *
- * Real delegates to `lib/image-blaster/sfx.ts` IVC helpers (ported from the
- * open-source image-blaster pipeline — see NOTICE.md). Mock is in-process and
- * deterministic.
+ * Real delegates to `lib/image-blaster/sfx.ts` IVC helpers. Mock is in-process
+ * and deterministic.
  */
 import {
   cloneVoice as elevenCloneVoice,

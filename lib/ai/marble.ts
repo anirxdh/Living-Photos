@@ -2,8 +2,7 @@
  * World Labs Marble adapter.
  *
  * Mock returns a deterministic fixture URL.
- * Real delegates to `lib/image-blaster/marble.ts` (ported from the open-source
- * image-blaster pipeline — see NOTICE.md for MIT attribution).
+ * Real delegates to `lib/image-blaster/marble.ts` which speaks the live API.
  */
 import {
   extractMarbleOperationId,

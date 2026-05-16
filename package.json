@@ -26,6 +26,7 @@
     "@neondatabase/serverless": "^1.0.1",
     "@react-three/drei": "^10.5.0",
     "@react-three/fiber": "^9.6.1",
+    "@sparkjsdev/spark": "^2.0.0",
     "@vercel/blob": "^1.0.0",
     "@vercel/og": "^0.7.0",
     "clsx": "^2.1.1",
@@ -38,7 +39,7 @@
     "react-dropzone": "^14.3.5",
     "stripe": "^22.1.0",
     "tailwind-merge": "^2.6.0",
-    "three": "^0.178.0",
+    "three": "^0.180.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -48,7 +49,7 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/three": "^0.178.0",
+    "@types/three": "^0.180.0",
     "@vitest/coverage-v8": "^2.1.8",
     "@vitest/ui": "^2.1.8",
     "drizzle-kit": "^0.30.0",

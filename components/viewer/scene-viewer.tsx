@@ -4,6 +4,7 @@ import { CameraControls, Environment, Html, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useState } from "react";
 import type { Scene } from "@/lib/db/schema";
+import { SplatRenderer } from "./splat-renderer";
 
 interface Props {
   scene: Scene;
@@ -11,9 +12,9 @@ interface Props {
 
 export default function SceneViewer({ scene }: Props) {
   const [webglOk, setWebglOk] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Detect WebGL 2.0 — Spark / splat rendering needs it
     try {
       const canvas = document.createElement("canvas");
       const gl = canvas.getContext("webgl2");
@@ -21,6 +22,7 @@ export default function SceneViewer({ scene }: Props) {
     } catch {
       setWebglOk(false);
     }
+    setIsMobile(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
   }, []);
 
   if (!webglOk) {
@@ -34,6 +36,11 @@ export default function SceneViewer({ scene }: Props) {
     );
   }
 
+  // Mobile devices get the low-poly splat tier to avoid Safari WebGL crashes
+  // on heavy worlds. Falls back to full-res on desktop.
+  const splatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
+  const meshUrls = (scene.meshes ?? []).filter((m) => m.url.toLowerCase().endsWith(".glb"));
+
   return (
     <div className="relative">
       <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-black">
@@ -46,11 +53,12 @@ export default function SceneViewer({ scene }: Props) {
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <Suspense fallback={<LoadingHtml />}>
-            {scene.meshes
-              ?.filter((m) => m.url.toLowerCase().endsWith(".glb"))
-              .map((m) => (
-                <SceneMesh key={m.url} url={m.url} />
-              ))}
+            {splatUrl && splatUrl.toLowerCase().endsWith(".spz") && (
+              <SplatRenderer url={splatUrl} />
+            )}
+            {meshUrls.map((m) => (
+              <SceneMesh key={m.url} url={m.url} />
+            ))}
           </Suspense>
           <Environment preset="apartment" />
           <CameraControls
@@ -85,7 +93,6 @@ function LoadingHtml() {
 }
 
 function SceneMesh({ url }: { url: string }) {
-  // Caller already filters non-.glb URLs; hooks must run unconditionally.
   const { scene } = useGLTF(url);
   return <primitive object={scene} />;
 }

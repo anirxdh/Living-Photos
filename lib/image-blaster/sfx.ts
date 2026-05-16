@@ -1,13 +1,13 @@
 /**
- * ElevenLabs Sound Effects — direct API (no FAL proxy).
+ * ElevenLabs direct API — Sound Effects + Instant Voice Cloning + TTS.
  *
- * image-blaster also routes SFX through `fal-ai/elevenlabs/sound-effects/v2`
- * (see `lib/image-blaster/fal.ts`). This module is the alternative direct path
- * that hits the ElevenLabs REST API and returns the raw MP3 bytes.
+ * Hits the ElevenLabs REST API directly (no SDK weight). Returns raw MP3
+ * bytes; callers are expected to push them through the BlobAdapter and store
+ * the resulting public URL on the scene row.
  *
- * The Real SFX adapter prefers FAL (image-blaster's choice — one API key, one
- * polling loop). This file is the fallback for callers that already have an
- * ElevenLabs key and want to avoid touching FAL.
+ * The FAL proxy at `fal-ai/elevenlabs/sound-effects/v2` is the alternative
+ * SFX path (see `lib/image-blaster/fal.ts`); this module is preferred when
+ * you already hold an ElevenLabs key.
  */
 
 const ELEVEN_BASE = "https://api.elevenlabs.io/v1";

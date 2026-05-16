@@ -1,11 +1,10 @@
 /**
- * FAL Queue client (Hunyuan3D + ElevenLabs Sound Effects).
+ * FAL Queue client — Hunyuan3D meshes + ElevenLabs Sound Effects.
  *
- * Ported from `vendor/image-blaster/.claude/scripts/asset-pipeline/fal-queue.mjs`
- * and `asset-pipeline/hunyuan-3d.mjs` (MIT, © Neilson Koerner-Safrata). Same
- * endpoints, same `Authorization: Key <FAL_KEY>` header, same polling shape.
- *
- * See NOTICE.md for the upstream MIT license text.
+ * Submit/poll/result protocol for the FAL queue API. Wraps the queue endpoints
+ * for `fal-ai/hunyuan3d-v3/image-to-3d` (per-object 3D meshes) and
+ * `fal-ai/elevenlabs/sound-effects/v2` (ambient SFX). Auth is the standard
+ * `Authorization: Key {FAL_KEY}` header.
  */
 
 const FAL_QUEUE_BASE = "https://queue.fal.run";

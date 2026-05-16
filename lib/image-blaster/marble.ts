@@ -1,12 +1,9 @@
 /**
  * World Labs Marble client.
  *
- * Ported from `vendor/image-blaster/.claude/scripts/world/generate-world.mjs`
- * (MIT, © Neilson Koerner-Safrata). Same endpoints, same auth header, same
- * request shape — translated to TypeScript and stripped of the filesystem
- * metadata bookkeeping (we use Inngest + the in-memory/Drizzle store instead).
- *
- * See NOTICE.md for the upstream MIT license text.
+ * Submits a photo to the Marble world-generation API, polls the long-running
+ * operation, and surfaces the splat / panorama / thumbnail URLs Marble returns.
+ * The Inngest pipeline in `lib/inngest/functions/scene-generate.ts` drives it.
  */
 
 export const MARBLE_ENDPOINT = "https://api.worldlabs.ai/marble/v1";

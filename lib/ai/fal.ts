@@ -1,8 +1,7 @@
 /**
  * FAL Hunyuan3D adapter — image crop → 3D mesh (.glb).
  *
- * Real delegates to `lib/image-blaster/fal.ts` (ported from the open-source
- * image-blaster pipeline — see NOTICE.md for MIT attribution).
+ * Real delegates to `lib/image-blaster/fal.ts` which speaks the live API.
  */
 import {
   getFalResult,

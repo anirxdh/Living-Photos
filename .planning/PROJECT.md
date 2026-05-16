@@ -50,12 +50,15 @@ A person can step inside a photograph that matters to them and hear someone they
 
 ## Constraints
 
-- **Tech stack**: Next.js 15 App Router + TypeScript + Tailwind + shadcn/ui on Vercel. Three.js / React-Three-Fiber for the viewer. ElevenLabs SDK for voice. Stripe Checkout (one-time) + Stripe Billing usage Meters (subscription overage). Forked image-blaster CLI runs server-side via API route.
+- **Tech stack**: Next.js 15 App Router + TypeScript + Tailwind + shadcn/ui on Vercel. Three.js / React-Three-Fiber for the viewer. ElevenLabs SDK for voice. Stripe Checkout (one-time) + Stripe Billing usage Meters (subscription overage). Forked image-blaster scripts (extracted as Node modules) called from API routes.
+- **Default-everywhere policy**: Choose the most recommended/popular library version each time. No analysis paralysis. If two viable options exist with similar maturity, pick the one with more GitHub stars / better docs / official-team backing.
+- **Mock-first for paid APIs**: World Labs Marble, FAL Hunyuan3D, ElevenLabs (voice clone + SFX), Stripe — all wrapped behind interface adapters with deterministic mock implementations. The app must run end-to-end with `MOCK_MODE=true` (no keys required). A clear "swap to real" doc + env-flag switch is part of the deliverable. This lets us demo and test without burning credits.
+- **Testing-first policy**: Every phase ships with tests. Playwright e2e (full user flows), Vitest unit (pure logic, adapter contracts), API contract tests (mock vs real shape), accessibility tests. Aim for many tests, not perfect coverage. CI runs them on every commit.
 - **Timeline**: Hackathon — target end-to-end shippable product in ~3 days of build time, demo-ready by submission deadline.
-- **Budget**: $50–$100 in API credits to demo (covers ~15-20 demo scenes + 50 voice clones).
-- **Dependencies**: World Labs Marble API key (~24h waitlist), FAL Hunyuan3D, ElevenLabs Creator tier ($22/mo), Stripe (test mode for demo), Vercel.
+- **Budget**: $0 day-one (mock mode). $50–$100 in API credits when we swap to real (covers ~15-20 demo scenes + 50 voice clones).
+- **Dependencies (real-mode)**: World Labs Marble API key, FAL Hunyuan3D, ElevenLabs Creator tier ($22/mo), Stripe (test mode for demo), Vercel. **None required for development/demo when MOCK_MODE=true.**
 - **Compatibility**: Must work in Mobile Safari for share links (Three.js with WebGL fallback). Desktop Chrome/Safari/Firefox primary.
-- **Performance**: Initial scene render: 4–5 min acceptable. Viewer load: <3s on 4G mobile. Generation cost: <$3.50 in API spend per scene (preserves margin).
+- **Performance**: Initial scene render: 4–5 min real / <5s mock. Viewer load: <3s on 4G mobile. Generation cost: <$3.50 in API spend per scene (preserves margin) — $0 in mock mode.
 - **Security/ethics**: Voice consent gate is non-negotiable. No voice clone proceeds without an attestation step. Stripe payments handled via Checkout (no PCI scope).
 
 ## Key Decisions
@@ -70,6 +73,9 @@ A person can step inside a photograph that matters to them and hear someone they
 | Defer Hedra talking-avatar overlay to V3 | Solves the "people look creepy" problem but adds significant complexity; ship voice-only narration in V1 | — Pending |
 | Use ElevenLabs IVC (not PVC) for voice clones | Instant cloning works in seconds from a 30s sample; PVC takes hours of training | — Pending |
 | Indoor scenes only as the marketing target | Image-blaster's sweet spot; "step into the room" framing avoids outdoor edge cases | — Pending |
+| Mock-mode for all paid APIs from day one | User has no API keys yet; mocks let us build + test e2e immediately and swap to real later via env flag | — Pending |
+| Tests required for every phase (Playwright + Vitest) | User explicitly asked for "many many tests"; non-negotiable | — Pending |
+| Pick most-recommended/popular library at each fork | User said "just choose the most recommended" — avoid analysis paralysis | — Pending |
 
 ---
 *Last updated: 2026-05-15 after initialization*

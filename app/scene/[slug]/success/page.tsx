@@ -1,5 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Footer } from "@/components/landing/footer";
+import { Nav } from "@/components/landing/nav";
+import { Button } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/eyebrow";
 import { getSceneBySlug } from "@/lib/scenes";
 import SuccessFulfill from "./success-fulfill";
 
@@ -14,17 +17,25 @@ export default async function SuccessPage({ params, searchParams }: PageProps) {
   const scene = getSceneBySlug(slug);
   if (!scene) notFound();
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center px-6 text-center">
-      <SuccessFulfill sceneId={scene.id} sessionId={sp.session_id ?? sp.scene_id ?? ""} />
-      <div className="mb-6 text-5xl">🌿</div>
-      <h1 className="mb-3 text-3xl font-light tracking-tight">Your memory is saved.</h1>
-      <p className="mb-8 text-muted-foreground">Thank you. {scene.title} is yours, forever.</p>
-      <Link
-        href={`/scene/${scene.slug}`}
-        className="rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background hover:opacity-90"
-      >
-        Step inside →
-      </Link>
-    </main>
+    <>
+      <Nav />
+      <main className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <SuccessFulfill sceneId={scene.id} sessionId={sp.session_id ?? sp.scene_id ?? ""} />
+        <Eyebrow className="mb-6">Saved forever</Eyebrow>
+        <h1 className="headline text-[clamp(48px,7vw,96px)] text-[var(--color-foreground)]">
+          Your memory is <span className="italic text-[var(--color-accent)]">yours.</span>
+        </h1>
+        <p className="mt-6 max-w-xl text-balance text-[var(--color-foreground-secondary)]">
+          {scene.title} is unlocked. Step inside whenever you want, and share the link with anyone —
+          they don't need an account.
+        </p>
+        <div className="mt-12">
+          <Button href={`/scene/${scene.slug}`} size="lg" variant="primary">
+            Step inside →
+          </Button>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }

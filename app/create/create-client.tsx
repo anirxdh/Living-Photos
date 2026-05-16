@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -47,7 +48,6 @@ export default function CreateClient() {
     setError(null);
     setState("uploading");
     try {
-      // 1. Get signed upload URL.
       const pathname = `uploads/${Date.now()}-${slug(file.name)}`;
       const signedRes = await fetch(
         `/api/blob/upload?pathname=${encodeURIComponent(pathname)}&contentType=${encodeURIComponent(file.type)}`,
@@ -58,7 +58,6 @@ export default function CreateClient() {
         publicUrl: string;
       };
 
-      // 2. PUT the bytes.
       const putRes = await fetch(url, {
         method: "PUT",
         body: file,
@@ -67,7 +66,6 @@ export default function CreateClient() {
       if (!putRes.ok) throw new Error("upload failed");
       const putJson = (await putRes.json().catch(() => ({}))) as { url?: string };
 
-      // 3. Create scene + kick pipeline.
       setState("saving");
       const sourceUrl = putJson.url ?? publicUrl;
       const sceneRes = await fetch("/api/scenes", {
@@ -89,65 +87,88 @@ export default function CreateClient() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="space-y-8"
+    >
       <div
         {...getRootProps()}
-        className={`rounded-2xl border-2 border-dashed p-12 text-center transition cursor-pointer ${
-          isDragActive ? "border-foreground bg-muted" : "border-border hover:border-foreground"
+        className={`group relative cursor-pointer overflow-hidden rounded-[var(--radius-lg)] border border-dashed transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          isDragActive
+            ? "border-[var(--color-accent)] bg-[var(--color-accent-glow)]"
+            : "border-[var(--color-border-strong)] hover:border-[var(--color-foreground-secondary)]"
         }`}
         data-testid="dropzone"
       >
         <input {...getInputProps()} data-testid="file-input" />
         {preview ? (
-          // biome-ignore lint/performance/noImgElement: blob preview, not optimized
-          <img src={preview} alt="preview" className="mx-auto max-h-64 rounded-lg" />
+          <div className="relative aspect-[4/3] w-full">
+            {/* biome-ignore lint/performance/noImgElement: blob preview */}
+            <img src={preview} alt="preview" className="h-full w-full object-cover" />
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background: "linear-gradient(180deg, transparent 60%, rgba(10,10,11,0.7) 100%)",
+              }}
+            />
+            <p className="absolute bottom-4 left-5 text-sm text-white/80">
+              Click to choose a different photo
+            </p>
+          </div>
         ) : (
-          <div>
-            <p className="text-lg">
+          <div className="px-12 py-20 text-center">
+            <p className="headline text-2xl text-[var(--color-foreground)]">
               {isDragActive ? "Drop the photo here." : "Drag a photo here, or click to browse."}
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              JPG, PNG, or WEBP, up to 25 MB. Interior scenes work best.
+            <p className="mt-3 text-sm text-[var(--color-foreground-muted)]">
+              JPG · PNG · WEBP, up to 25 MB. Interior scenes work best.
             </p>
           </div>
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-5">
         <label className="block">
-          <span className="mb-1 block text-sm text-muted-foreground">Title</span>
+          <span className="eyebrow mb-2 block">Title</span>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Grandma's kitchen, 1995"
-            className="w-full rounded-lg border border-border bg-transparent px-3 py-2 outline-none focus:border-foreground"
+            className="w-full rounded-lg border border-[var(--color-border-strong)] bg-transparent px-4 py-3 text-[var(--color-foreground)] placeholder:text-[var(--color-foreground-muted)] outline-none transition-colors focus:border-[var(--color-accent)]"
             data-testid="title-input"
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm text-muted-foreground">A note (optional)</span>
+          <span className="eyebrow mb-2 block">A note (optional)</span>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What do you remember about this place?"
             rows={3}
-            className="w-full rounded-lg border border-border bg-transparent px-3 py-2 outline-none focus:border-foreground"
+            className="w-full resize-none rounded-lg border border-[var(--color-border-strong)] bg-transparent px-4 py-3 text-[var(--color-foreground)] placeholder:text-[var(--color-foreground-muted)] outline-none transition-colors focus:border-[var(--color-accent)]"
             data-testid="description-input"
           />
         </label>
       </div>
 
       {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-lg border border-[var(--color-destructive)]/40 bg-[var(--color-destructive)]/10 px-4 py-3 text-sm text-[var(--color-destructive)]"
+        >
           {error}
-        </div>
+        </motion.div>
       )}
 
       <button
         type="button"
         onClick={submit}
         disabled={!file || state === "uploading" || state === "saving"}
-        className="w-full rounded-full bg-foreground py-3 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-40"
+        className="btn-primary w-full rounded-full py-4 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
         data-testid="submit-button"
       >
         {state === "uploading"
@@ -156,7 +177,7 @@ export default function CreateClient() {
             ? "Preparing your memory…"
             : "Bring this memory to life"}
       </button>
-    </div>
+    </motion.div>
   );
 }
 

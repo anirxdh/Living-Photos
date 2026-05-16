@@ -1,20 +1,22 @@
 "use client";
 
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/ui/glass-card";
 import type { Scene } from "@/lib/db/schema";
 
-// R3F viewer is dynamically imported with SSR off — Three.js touches `window` immediately
 const Viewer = dynamic(() => import("@/components/viewer/scene-viewer"), {
   ssr: false,
-  loading: () => <div className="aspect-video animate-pulse rounded-2xl bg-muted" />,
+  loading: () => (
+    <div className="aspect-video animate-pulse rounded-[var(--radius-lg)] bg-[var(--color-surface)]" />
+  ),
 });
 
 export default function SceneClient({ scene: initialScene }: { scene: Scene }) {
   const [scene, setScene] = useState(initialScene);
 
-  // Poll for status while pipeline runs (mock mode finishes in <1s, this is mainly
-  // a visual progress indicator; phase 3 wires this to Inngest realtime).
   useEffect(() => {
     if (scene.status === "ready" || scene.status === "failed") return;
     const t = setInterval(async () => {
@@ -29,33 +31,71 @@ export default function SceneClient({ scene: initialScene }: { scene: Scene }) {
 
   if (scene.status !== "ready") {
     return (
-      <div className="rounded-2xl border border-border bg-muted/40 p-12 text-center">
-        <p className="mb-3 text-lg">Preparing your memory…</p>
-        <p className="text-sm text-muted-foreground">
-          We're rebuilding the room in 3D. This takes a few minutes for a real photo — you can leave
-          this page and come back.
-        </p>
-        <div className="mx-auto mt-6 h-2 w-64 overflow-hidden rounded-full bg-border">
-          <div className="h-full w-1/3 animate-pulse bg-foreground" />
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <GlassCard className="text-center">
+          <p className="headline text-3xl text-[var(--color-foreground)]">Preparing your memory…</p>
+          <p className="mx-auto mt-4 max-w-md text-[var(--color-foreground-secondary)]">
+            We're rebuilding the room in 3D. This takes about four to five minutes for a real photo
+            — you can leave this page and come back.
+          </p>
+          <div className="mx-auto mt-10 h-px w-full max-w-md overflow-hidden bg-[var(--color-border)]">
+            <motion.div
+              className="h-full bg-[var(--color-accent)]"
+              initial={{ width: "0%" }}
+              animate={{ width: ["0%", "70%", "85%"] }}
+              transition={{
+                duration: 240,
+                times: [0, 0.6, 1],
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            />
+          </div>
+        </GlassCard>
+      </motion.div>
     );
   }
 
   if (!scene.paid) {
     return (
-      <div className="rounded-2xl border border-border p-12 text-center">
-        <p className="mb-2 text-2xl font-light">Your memory is ready.</p>
-        <p className="mb-8 text-muted-foreground">Unlock it forever for $19.</p>
-        <UnlockButton sceneId={scene.id} />
-        <p className="mt-4 text-xs text-muted-foreground">
-          One-time payment · No subscription · Share with family
-        </p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <GlassCard className="text-center">
+          <p className="eyebrow">Ready</p>
+          <p className="mt-4 headline text-[clamp(36px,5vw,56px)] text-[var(--color-foreground)]">
+            Your memory is ready to{" "}
+            <span className="italic text-[var(--color-accent)]">step inside.</span>
+          </p>
+          <p className="mx-auto mt-6 max-w-md text-[var(--color-foreground-secondary)]">
+            Unlock it forever for $19. One-time payment, no subscription, yours to share with
+            family.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <UnlockButton sceneId={scene.id} />
+          </div>
+          <p className="mt-6 text-xs text-[var(--color-foreground-muted)]">
+            Apple Pay · Google Pay · Cards
+          </p>
+        </GlassCard>
+      </motion.div>
     );
   }
 
-  return <Viewer scene={scene} />;
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <Viewer scene={scene} />
+    </motion.div>
+  );
 }
 
 function UnlockButton({ sceneId }: { sceneId: string }) {
@@ -75,14 +115,8 @@ function UnlockButton({ sceneId }: { sceneId: string }) {
     window.location.href = url;
   }
   return (
-    <button
-      type="button"
-      onClick={unlock}
-      disabled={loading}
-      className="rounded-full bg-foreground px-8 py-3 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
-      data-testid="unlock-button"
-    >
+    <Button onClick={unlock} disabled={loading} size="lg" variant="primary" testId="unlock-button">
       {loading ? "Opening checkout…" : "Unlock memory — $19"}
-    </button>
+    </Button>
   );
 }

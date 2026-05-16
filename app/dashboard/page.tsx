@@ -1,4 +1,9 @@
 import Link from "next/link";
+import { Footer } from "@/components/landing/footer";
+import { Nav } from "@/components/landing/nav";
+import { Button } from "@/components/ui/button";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { Headline } from "@/components/ui/headline";
 import { listAllScenes } from "@/lib/scenes";
 
 export const dynamic = "force-dynamic";
@@ -10,60 +15,79 @@ export const metadata = {
 export default function DashboardPage() {
   const scenes = listAllScenes();
   return (
-    <main className="relative z-10 mx-auto max-w-4xl px-6 py-16">
-      <div className="mb-10 flex items-baseline justify-between">
-        <div>
-          <p className="mb-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            My memories
-          </p>
-          <h1 className="text-3xl font-light tracking-tight">All of yours, in one place.</h1>
-        </div>
-        <Link
-          href="/create"
-          className="rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background hover:opacity-90"
-        >
-          + New memory
-        </Link>
-      </div>
+    <>
+      <Nav />
+      <main className="relative min-h-screen pt-32">
+        <div className="mx-auto max-w-6xl px-6 pb-24">
+          <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <Eyebrow className="mb-4">My memories</Eyebrow>
+              <Headline size="card" as="h1">
+                All of yours,{" "}
+                <span className="italic text-[var(--color-foreground-secondary)]">
+                  in one place.
+                </span>
+              </Headline>
+            </div>
+            <Button href="/create" size="md" variant="primary">
+              + New memory
+            </Button>
+          </div>
 
-      {scenes.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-16 text-center">
-          <p className="mb-3 text-lg">No memories yet.</p>
-          <p className="mb-6 text-muted-foreground">Upload your first photo to step inside it.</p>
-          <Link
-            href="/create"
-            className="inline-block rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background hover:opacity-90"
-          >
-            Start with a photo
-          </Link>
+          {scenes.length === 0 ? (
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border-strong)] px-8 py-24 text-center">
+              <p className="headline text-3xl text-[var(--color-foreground)]">Nothing here yet.</p>
+              <p className="mt-4 text-[var(--color-foreground-secondary)]">
+                Upload your first photo to step inside it.
+              </p>
+              <div className="mt-10">
+                <Button href="/create" size="md" variant="primary">
+                  Start with a photo
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {scenes.map((s) => (
+                <li key={s.id}>
+                  <Link
+                    href={`/scene/${s.slug}`}
+                    className="group block overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[var(--color-foreground-secondary)] hover:bg-[var(--color-surface-elevated)]"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      {/* biome-ignore lint/performance/noImgElement: not optimizing user uploads */}
+                      <img
+                        src={s.sourcePhotoUrl}
+                        alt={s.title}
+                        className="h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                      />
+                      <div
+                        aria-hidden
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(180deg, transparent 50%, rgba(10,10,11,0.85) 100%)",
+                        }}
+                      />
+                    </div>
+                    <div className="p-5">
+                      <p className="font-serif text-xl text-[var(--color-foreground)] italic">
+                        {s.title}
+                      </p>
+                      <p className="mt-2 text-xs text-[var(--color-foreground-muted)]">
+                        {statusLabel(s.status)}
+                        {s.paid ? " · Unlocked" : ""}
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      ) : (
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {scenes.map((s) => (
-            <li
-              key={s.id}
-              className="overflow-hidden rounded-2xl border border-border bg-card transition hover:border-foreground"
-            >
-              <Link href={`/scene/${s.slug}`}>
-                {/* biome-ignore lint/performance/noImgElement: not user-facing perf path */}
-                <img
-                  src={s.sourcePhotoUrl}
-                  alt={s.title}
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                <div className="p-4">
-                  <p className="font-medium">{s.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {statusLabel(s.status)}
-                    {s.paid ? " · Unlocked" : ""}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }
 

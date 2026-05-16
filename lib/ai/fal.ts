@@ -1,13 +1,23 @@
 /**
  * FAL Hunyuan3D adapter — image crop → 3D mesh (.glb).
+ *
+ * Real delegates to `lib/image-blaster/fal.ts` (ported from the open-source
+ * image-blaster pipeline — see NOTICE.md for MIT attribution).
  */
-
+import {
+  getFalResult,
+  HUNYUAN_3D_ENDPOINT,
+  type Hunyuan3DResult,
+  pollFalStatus,
+  readHunyuan3DResult,
+  submitHunyuan3D,
+} from "@/lib/image-blaster/fal";
 import { mockId } from "@/lib/utils";
 import type { MeshAdapter, MeshResult, MeshSubmitInput, MeshSubmitOutput } from "./types";
 
 const FIXTURE_MESH = "/fixtures/object.glb";
 const MOCK_LATENCY_MS = process.env.NODE_ENV === "test" ? 1 : 15;
-const MESH_COST_CENTS = 16; // $0.16 standard tier per object
+const MESH_COST_CENTS = 16; // ~$0.16/object at Hunyuan3D's standard tier
 
 export class MockMeshAdapter implements MeshAdapter {
   private results = new Map<string, MeshResult>();
@@ -43,40 +53,36 @@ export class RealMeshAdapter implements MeshAdapter {
   }
 
   async submit(input: MeshSubmitInput): Promise<MeshSubmitOutput> {
-    const res = await fetch("https://queue.fal.run/fal-ai/hunyuan3d-v21", {
-      method: "POST",
-      headers: { authorization: `Key ${this.apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        input: {
-          image_url: input.imageUrl,
-          num_faces: input.facesTarget ?? 50_000,
-        },
-        webhook_url: input.webhookUrl,
-      }),
+    const submitted = await submitHunyuan3D({
+      apiKey: this.apiKey,
+      input_image_url: input.imageUrl,
+      face_count: input.facesTarget ?? 50_000,
+      generate_type: "Normal",
+      enable_pbr: true,
     });
-    if (!res.ok) throw new Error(`FAL submit failed: ${res.status} ${await res.text()}`);
-    const json = (await res.json()) as { request_id: string };
-    return { jobId: json.request_id };
+    return { jobId: submitted.request_id };
   }
 
   async poll(jobId: string): Promise<MeshResult> {
-    const res = await fetch(`https://queue.fal.run/fal-ai/hunyuan3d-v21/requests/${jobId}`, {
-      headers: { authorization: `Key ${this.apiKey}` },
-    });
-    if (!res.ok) throw new Error(`FAL poll failed: ${res.status}`);
-    const json = (await res.json()) as {
-      status: "IN_PROGRESS" | "COMPLETED" | "FAILED";
-      response?: { model_mesh?: { url: string } };
-      error?: string;
-    };
-    const status =
-      json.status === "COMPLETED" ? "succeeded" : json.status === "FAILED" ? "failed" : "pending";
+    const status = await pollFalStatus(HUNYUAN_3D_ENDPOINT, jobId, this.apiKey);
+    if (status.status === "FAILED") {
+      return {
+        jobId,
+        status: "failed",
+        costCents: 0,
+        error: typeof status.error === "string" ? status.error : "FAL job failed",
+      };
+    }
+    if (status.status !== "COMPLETED") {
+      return { jobId, status: "pending", costCents: 0 };
+    }
+    const result = await getFalResult<Hunyuan3DResult>(HUNYUAN_3D_ENDPOINT, jobId, this.apiKey);
+    const { glbUrl } = readHunyuan3DResult(result);
     return {
       jobId,
-      status,
-      glbUrl: json.response?.model_mesh?.url,
+      status: "succeeded",
+      glbUrl,
       costCents: MESH_COST_CENTS,
-      error: json.error,
     };
   }
 }

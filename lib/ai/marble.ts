@@ -1,9 +1,16 @@
 /**
  * World Labs Marble adapter.
- * Mock returns a fixture .spz URL deterministically derived from sceneId.
- * Real wraps fetch() against the World Labs API (TODO: vendor SDK when stable).
+ *
+ * Mock returns a deterministic fixture URL.
+ * Real delegates to `lib/image-blaster/marble.ts` (ported from the open-source
+ * image-blaster pipeline — see NOTICE.md for MIT attribution).
  */
-
+import {
+  extractMarbleOperationId,
+  pickSpzUrls,
+  pollMarbleOperation,
+  submitMarbleWorld,
+} from "@/lib/image-blaster/marble";
 import { mockId } from "@/lib/utils";
 import type { MarbleAdapter, MarbleResult, MarbleSubmitInput, MarbleSubmitOutput } from "./types";
 
@@ -11,7 +18,7 @@ const FIXTURE_SPZ = "/fixtures/living-room.spz";
 const FIXTURE_SPZ_LOWPOLY = "/fixtures/living-room.lowpoly.spz";
 
 const MOCK_LATENCY_MS = process.env.NODE_ENV === "test" ? 1 : 20;
-const MARBLE_COST_CENTS = 120; // $1.20 per world
+const MARBLE_COST_CENTS = 120; // $1.20 per world per World Labs pricing
 
 export class MockMarbleAdapter implements MarbleAdapter {
   private results = new Map<string, MarbleResult>();
@@ -42,47 +49,46 @@ export class MockMarbleAdapter implements MarbleAdapter {
   }
 }
 
+/**
+ * Real Marble adapter. Submits a world generation, returns the operation id,
+ * then polls until done. Splat URLs (full + low-poly) are extracted from the
+ * `assets.splats.spz_urls` map returned by Marble.
+ */
 export class RealMarbleAdapter implements MarbleAdapter {
   constructor(private apiKey: string) {
     if (!apiKey) throw new Error("RealMarbleAdapter: WORLD_LABS_API_KEY missing");
   }
 
   async submit(input: MarbleSubmitInput): Promise<MarbleSubmitOutput> {
-    const res = await fetch("https://api.worldlabs.ai/v1/marble/submit", {
-      method: "POST",
-      headers: { authorization: `Bearer ${this.apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        image_url: input.imageUrl,
-        client_reference_id: input.sceneId,
-        webhook_url: input.webhookUrl,
-      }),
+    const op = await submitMarbleWorld({
+      apiKey: this.apiKey,
+      displayName: input.sceneId,
+      imageUrl: input.imageUrl,
     });
-    if (!res.ok) throw new Error(`Marble submit failed: ${res.status} ${await res.text()}`);
-    const json = (await res.json()) as { job_id: string; eta?: string };
+    const jobId = extractMarbleOperationId(op);
     return {
-      jobId: json.job_id,
-      estimatedReadyAt: json.eta ?? new Date(Date.now() + 4 * 60_000).toISOString(),
+      jobId,
+      // Marble worlds usually complete in 3–5 minutes; conservative ETA.
+      estimatedReadyAt: new Date(Date.now() + 5 * 60_000).toISOString(),
     };
   }
 
   async poll(jobId: string): Promise<MarbleResult> {
-    const res = await fetch(`https://api.worldlabs.ai/v1/marble/jobs/${jobId}`, {
-      headers: { authorization: `Bearer ${this.apiKey}` },
-    });
-    if (!res.ok) throw new Error(`Marble poll failed: ${res.status}`);
-    const json = (await res.json()) as {
-      status: "pending" | "succeeded" | "failed";
-      spz_url?: string;
-      spz_url_lowpoly?: string;
-      error?: string;
-    };
+    const op = await pollMarbleOperation(jobId, this.apiKey);
+    if (op.error) {
+      const errMsg = typeof op.error === "string" ? op.error : op.error.message;
+      return { jobId, status: "failed", costCents: 0, error: errMsg };
+    }
+    if (!op.done) {
+      return { jobId, status: "pending", costCents: 0 };
+    }
+    const urls = pickSpzUrls(op);
     return {
       jobId,
-      status: json.status,
-      spzUrl: json.spz_url,
-      spzUrlLowPoly: json.spz_url_lowpoly,
+      status: "succeeded",
+      spzUrl: urls.full,
+      spzUrlLowPoly: urls.lowPoly,
       costCents: MARBLE_COST_CENTS,
-      error: json.error,
     };
   }
 }

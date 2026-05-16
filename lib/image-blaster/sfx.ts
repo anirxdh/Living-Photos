@@ -1,0 +1,119 @@
+/**
+ * ElevenLabs Sound Effects — direct API (no FAL proxy).
+ *
+ * image-blaster also routes SFX through `fal-ai/elevenlabs/sound-effects/v2`
+ * (see `lib/image-blaster/fal.ts`). This module is the alternative direct path
+ * that hits the ElevenLabs REST API and returns the raw MP3 bytes.
+ *
+ * The Real SFX adapter prefers FAL (image-blaster's choice — one API key, one
+ * polling loop). This file is the fallback for callers that already have an
+ * ElevenLabs key and want to avoid touching FAL.
+ */
+
+const ELEVEN_BASE = "https://api.elevenlabs.io/v1";
+
+export interface ElevenSfxArgs {
+  text: string;
+  /** Seconds; ElevenLabs clamps to [1, 22]. */
+  durationSeconds?: number;
+  promptInfluence?: number;
+  apiKey: string;
+}
+
+/** Returns raw MP3 bytes. Caller is responsible for storing them. */
+export async function generateElevenSfx(args: ElevenSfxArgs): Promise<ArrayBuffer> {
+  if (!args.apiKey) throw new Error("ElevenLabs: ELEVENLABS_API_KEY missing.");
+  const res = await fetch(`${ELEVEN_BASE}/sound-generation`, {
+    method: "POST",
+    headers: {
+      "xi-api-key": args.apiKey,
+      "Content-Type": "application/json",
+      Accept: "audio/mpeg",
+    },
+    body: JSON.stringify({
+      text: args.text,
+      duration_seconds: Math.min(Math.max(args.durationSeconds ?? 10, 1), 22),
+      prompt_influence: args.promptInfluence ?? 0.5,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(`ElevenLabs SFX failed (${res.status}): ${err}`);
+  }
+  return res.arrayBuffer();
+}
+
+// --- IVC + Narration (used by lib/ai/voice.ts) -----------------------------
+
+export interface IvcArgs {
+  name: string;
+  description?: string;
+  /** Audio bytes — wav/mp3/m4a are all accepted. */
+  sampleBytes: ArrayBuffer | Blob;
+  sampleFilename?: string;
+  apiKey: string;
+}
+
+export async function cloneVoice(args: IvcArgs): Promise<{ voiceId: string }> {
+  if (!args.apiKey) throw new Error("ElevenLabs: ELEVENLABS_API_KEY missing.");
+  const form = new FormData();
+  form.append("name", args.name);
+  if (args.description) form.append("description", args.description);
+  const blob =
+    args.sampleBytes instanceof Blob
+      ? args.sampleBytes
+      : new Blob([args.sampleBytes], { type: "audio/mpeg" });
+  form.append("files", blob, args.sampleFilename ?? "sample.mp3");
+
+  const res = await fetch(`${ELEVEN_BASE}/voices/add`, {
+    method: "POST",
+    headers: { "xi-api-key": args.apiKey },
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(`IVC failed (${res.status}): ${err}`);
+  }
+  const json = (await res.json()) as { voice_id: string };
+  if (!json.voice_id) throw new Error("IVC: response missing voice_id.");
+  return { voiceId: json.voice_id };
+}
+
+export interface NarrateArgs {
+  voiceId: string;
+  text: string;
+  /** Model id. Defaults to `eleven_multilingual_v2`. */
+  modelId?: string;
+  apiKey: string;
+}
+
+export async function generateNarration(args: NarrateArgs): Promise<ArrayBuffer> {
+  const res = await fetch(`${ELEVEN_BASE}/text-to-speech/${encodeURIComponent(args.voiceId)}`, {
+    method: "POST",
+    headers: {
+      "xi-api-key": args.apiKey,
+      "Content-Type": "application/json",
+      Accept: "audio/mpeg",
+    },
+    body: JSON.stringify({
+      text: args.text,
+      model_id: args.modelId ?? "eleven_multilingual_v2",
+      voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(`ElevenLabs narration failed (${res.status}): ${err}`);
+  }
+  return res.arrayBuffer();
+}
+
+export async function deleteVoice(voiceId: string, apiKey: string): Promise<void> {
+  const res = await fetch(`${ELEVEN_BASE}/voices/${encodeURIComponent(voiceId)}`, {
+    method: "DELETE",
+    headers: { "xi-api-key": apiKey },
+  });
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`ElevenLabs voice delete failed (${res.status}).`);
+  }
+}

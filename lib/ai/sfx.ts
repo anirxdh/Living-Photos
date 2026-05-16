@@ -1,7 +1,12 @@
 /**
  * ElevenLabs SFX adapter — prompt → looping ambient mp3.
+ *
+ * Real delegates to `lib/image-blaster/sfx.ts` (ported from the open-source
+ * image-blaster pipeline — see NOTICE.md for MIT attribution). The MP3 bytes
+ * are returned as a base64 data URL today; production callers should pipe the
+ * ArrayBuffer through the BlobAdapter and store the public URL on the scene.
  */
-
+import { generateElevenSfx } from "@/lib/image-blaster/sfx";
 import type { SfxAdapter, SfxInput, SfxOutput } from "./types";
 
 const FIXTURE_AMBIENT = "/fixtures/ambient.mp3";
@@ -9,8 +14,6 @@ const SFX_COST_CENTS = 3;
 
 export class MockSfxAdapter implements SfxAdapter {
   async generate(input: SfxInput): Promise<SfxOutput> {
-    // Mock returns the fixture URL — deterministic by virtue of being a constant.
-    // Real adapter would push the generated mp3 to blob storage and return that URL.
     return {
       url: FIXTURE_AMBIENT,
       durationSeconds: Math.min(input.durationSeconds ?? 10, 22),
@@ -25,22 +28,16 @@ export class RealSfxAdapter implements SfxAdapter {
   }
 
   async generate(input: SfxInput): Promise<SfxOutput> {
-    const res = await fetch("https://api.elevenlabs.io/v1/sound-generation", {
-      method: "POST",
-      headers: { "xi-api-key": this.apiKey, "content-type": "application/json" },
-      body: JSON.stringify({
-        text: input.prompt,
-        duration_seconds: Math.min(input.durationSeconds ?? 10, 22),
-        prompt_influence: 0.5,
-      }),
+    const buf = await generateElevenSfx({
+      apiKey: this.apiKey,
+      text: input.prompt,
+      durationSeconds: input.durationSeconds ?? 10,
+      promptInfluence: 0.5,
     });
-    if (!res.ok) throw new Error(`SFX generate failed: ${res.status}`);
-    const buf = await res.arrayBuffer();
-    // The caller is expected to push this Buffer to blob storage; for now we
-    // return a data URL fallback. Real pipeline pipes the body through the
-    // BlobAdapter and uses its public URL instead.
     const b64 = Buffer.from(buf).toString("base64");
     return {
+      // Pipeline orchestrator should pipe this through BlobAdapter and replace
+      // with a stable public URL; data URL is the pure-fallback shape.
       url: `data:audio/mpeg;base64,${b64}`,
       durationSeconds: input.durationSeconds ?? 10,
       costCents: SFX_COST_CENTS,

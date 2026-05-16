@@ -1,0 +1,50 @@
+Living Photos — Proprietary License
+Copyright (c) 2026 Anirudh Vasudevan. All rights reserved.
+
+This software and its source code (the "Software") are the proprietary work
+of the copyright holder. By accessing this repository, you agree to the
+following terms.
+
+1. PERMITTED USE
+   You may view, fork on GitHub, and read this source code for the sole
+   purposes of personal evaluation, academic study, and security review. Any
+   such use must preserve this LICENSE file and the NOTICE.md file in full.
+
+2. PROHIBITED USE
+   Without prior written permission from the copyright holder, you may NOT:
+   (a) use the Software, in whole or in part, for any commercial purpose;
+   (b) redistribute, sublicense, sell, lease, rent, or host the Software for
+       any third party, including as a SaaS offering;
+   (c) create or distribute any derivative work, port, fork (as a standalone
+       project), or competing product based on the Software;
+   (d) remove, obscure, or alter any copyright notice, this LICENSE file, the
+       NOTICE.md file, or any other proprietary marking;
+   (e) use the Software to train any machine-learning model, dataset, or
+       weight checkpoint;
+   (f) re-publish the Software, its compiled artifacts, its UI text, its
+       brand identity, or its visual design under any other name or license.
+
+3. THIRD-PARTY COMPONENTS
+   Portions of `lib/image-blaster/` are derived from the open-source project
+   "image-blaster" by Neilson Koerner-Safrata, distributed under the MIT
+   License. Those portions remain subject to the MIT License; see NOTICE.md
+   for the full attribution. All other source code in this repository is
+   governed exclusively by this License.
+
+4. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES,
+   OR OTHER LIABILITY ARISING FROM YOUR USE OF THE SOFTWARE.
+
+5. TERMINATION
+   Any breach of the terms above immediately terminates your rights under
+   this License. Upon termination you must destroy all copies of the
+   Software in your possession.
+
+6. CONTACT
+   For commercial licensing, partnership, or any other permission request,
+   contact the copyright holder via GitHub: https://github.com/anirxdh
+
+— END OF LICENSE —

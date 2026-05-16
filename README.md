@@ -4,6 +4,8 @@
 
 A hackathon submission for the Stripe + ElevenLabs hackathon (May 2026).
 
+**© 2026 Anirudh Vasudevan — All Rights Reserved.** See [LICENSE](./LICENSE) and [NOTICE.md](./NOTICE.md).
+
 ---
 
 ## What this is
@@ -16,7 +18,7 @@ Living Photos turns an interior photograph into a walkable 3D Gaussian-splat sce
 - one-time **$19 Stripe Checkout** to unlock the scene forever
 - a public share URL (`/s/<slug>`) with custom OG preview
 
-Built on top of the open-source [`image-blaster`](https://github.com/neilsonnn/image-blaster) pipeline (kept in `vendor/` for reference), wrapped in a Next.js 15 + Three.js + Inngest + Stripe app.
+Built as a Next.js 15 + Three.js + Inngest + Stripe app that orchestrates World Labs Marble (3D environment), FAL Hunyuan3D (3D meshes), and the ElevenLabs API (voice clone + ambient SFX + narration) end-to-end.
 
 ---
 

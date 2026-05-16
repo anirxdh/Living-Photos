@@ -2,7 +2,6 @@
  * Storage adapter — Vercel Blob in prod, in-memory pseudo-URLs in mock.
  */
 
-import { mockId } from "@/lib/utils";
 import type { BlobAdapter, BlobUploadInput, BlobUploadOutput } from "./types";
 
 export class MockBlobAdapter implements BlobAdapter {
@@ -14,10 +13,19 @@ export class MockBlobAdapter implements BlobAdapter {
     return { url };
   }
 
+  /**
+   * In mock mode we send the client back to OUR own /api/blob/upload PUT route
+   * so an in-browser fetch can actually upload the bytes. (The real adapter
+   * returns a Vercel Blob signed URL the client PUTs to directly.)
+   */
   async createSignedUploadUrl(input: { pathname: string; contentType: string }) {
-    const id = mockId("upload", input.pathname);
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const qs = `?pathname=${encodeURIComponent(input.pathname)}&contentType=${encodeURIComponent(input.contentType)}`;
+    // Use a relative URL when called server-side (env unset) so the browser
+    // resolves against its current origin.
+    const url = `${base}/api/blob/upload${qs}`;
     return {
-      url: `https://mock.blob.local/upload/${id}`,
+      url,
       publicUrl: `https://mock.blob.local/${input.pathname}`,
     };
   }

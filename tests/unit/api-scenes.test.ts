@@ -35,7 +35,7 @@ describe("/api/scenes", () => {
     expect(res.status).toBe(201);
     const j = (await res.json()) as { scene: { id: string; slug: string; title: string } };
     expect(j.scene.title).toBe("Test");
-    expect(j.scene.slug).toMatch(/^[a-z0-9]{8}$/);
+    expect(j.scene.slug).toMatch(/^[a-z0-9]{12}$/);
   });
 
   it("POST rejects invalid input with 400", async () => {
@@ -45,28 +45,29 @@ describe("/api/scenes", () => {
     expect(res.status).toBe(400);
   });
 
-  it("GET lists all scenes", async () => {
+  it("GET without filter returns 400 (no unfiltered listings)", async () => {
     await createSceneHandler(
       jsonReq("http://test/api/scenes", { sourcePhotoUrl: "https://x.test/1.jpg" }),
     );
-    await createSceneHandler(
-      jsonReq("http://test/api/scenes", { sourcePhotoUrl: "https://x.test/2.jpg" }),
-    );
     const res = await listScenesHandler(new Request("http://test/api/scenes"));
-    const j = (await res.json()) as { scenes: unknown[] };
-    expect(j.scenes.length).toBe(2);
+    expect(res.status).toBe(400);
   });
 
-  it("GET filters by email", async () => {
+  it("GET filters by email and returns public-safe shape (no anonymousEmail field)", async () => {
     await createSceneHandler(
       jsonReq("http://test/api/scenes", {
         sourcePhotoUrl: "https://x.test/p.jpg",
+        title: "Alice's scene",
         anonymousEmail: "alice@x.test",
       }),
     );
     const res = await listScenesHandler(new Request("http://test/api/scenes?email=alice@x.test"));
-    const j = (await res.json()) as { scenes: Array<{ anonymousEmail: string }> };
-    expect(j.scenes.every((s) => s.anonymousEmail === "alice@x.test")).toBe(true);
+    expect(res.status).toBe(200);
+    const j = (await res.json()) as { scenes: Array<{ title: string }> };
+    expect(j.scenes).toHaveLength(1);
+    expect(j.scenes[0].title).toBe("Alice's scene");
+    // publicScene strips anonymousEmail so a slug-enumerator can't pull PII.
+    expect((j.scenes[0] as unknown as Record<string, unknown>).anonymousEmail).toBeUndefined();
   });
 
   it("GET /api/scenes/[id] returns 404 for unknown", async () => {

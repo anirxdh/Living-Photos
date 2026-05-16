@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { memScenes } from "@/lib/db/memory";
+import { memReports, memScenes } from "@/lib/db/memory";
 import { newId } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -14,17 +14,32 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const scene = memScenes.get(id);
   if (!scene) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  // Best-effort per-IP rate limit so a single client can't mass-flag.
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  if (memReports.isRateLimited(ip)) {
+    return NextResponse.json({ error: "rate limited" }, { status: 429 });
+  }
+
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid input" }, { status: 400 });
-  // For mock mode we just append to the scene description as an abuse marker
-  // and 1-hour-auto-nuke is enforced by a tiny tag; the real persistence
-  // lands when we wire Drizzle in real mode.
-  memScenes.update(id, {
-    error: `[REPORTED ${new Date().toISOString()}] ${parsed.data.reason}`,
+
+  const report = memReports.insert({
+    id: newId("rpt"),
+    sceneId: id,
+    reason: parsed.data.reason,
+    reporterEmail: parsed.data.reporterEmail ?? null,
+    createdAt: new Date(),
   });
+
   return NextResponse.json({
     received: true,
-    reportId: newId("rpt"),
-    autoNukeAtIso: new Date(Date.now() + 60 * 60_000).toISOString(),
+    reportId: report.id,
+    // Operational policy: triage within 1 hour; the auto-nuke job lands
+    // when we wire a scheduled Inngest function in the real swap.
+    triageWithinIso: new Date(Date.now() + 60 * 60_000).toISOString(),
   });
 }

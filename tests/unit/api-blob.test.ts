@@ -7,7 +7,7 @@ describe("/api/blob/upload", () => {
       new Request("http://test/api/blob/upload?pathname=uploads/a.jpg&contentType=image/jpeg"),
     );
     const j = (await res.json()) as { url: string; publicUrl: string };
-    expect(j.url).toContain("upload");
+    expect(j.url).toContain("/api/blob/upload");
     expect(j.publicUrl).toContain("uploads/a.jpg");
   });
 

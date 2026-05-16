@@ -42,4 +42,28 @@ describe("email service", () => {
       expect(tmpl.html).toContain("<");
     });
   });
+
+  describe("title HTML injection", () => {
+    it("escapes <script> tags in the HTML body", () => {
+      const tmpl = sceneReadyEmail({
+        to: "x@x.test",
+        title: '<script>alert("xss")</script>',
+        shareUrl: "https://livingphotos.app/s/a",
+      });
+      expect(tmpl.html).not.toContain("<script>");
+      expect(tmpl.html).toContain("&lt;script&gt;");
+    });
+
+    it("strips angle brackets and CR/LF from the subject line", () => {
+      const tmpl = sceneReadyEmail({
+        to: "x@x.test",
+        title: 'Hello <evil href="x">\r\nBcc: spam',
+        shareUrl: "https://livingphotos.app/s/a",
+      });
+      expect(tmpl.subject).not.toContain("<");
+      expect(tmpl.subject).not.toContain(">");
+      expect(tmpl.subject).not.toContain("\r");
+      expect(tmpl.subject).not.toContain("\n");
+    });
+  });
 });

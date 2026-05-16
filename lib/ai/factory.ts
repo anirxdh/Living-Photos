@@ -37,6 +37,18 @@ let overridden: Partial<Adapters> | null = null;
 
 function build(): Adapters {
   if (env.MOCK_MODE) {
+    // P0 hardening: refuse mock adapters in production builds. MOCK_MODE on a
+    // public deployment turns the Stripe webhook signature check into a
+    // hardcoded-secret HMAC (the secret is in this repo) and exposes the
+    // /api/stripe/mock-fulfill bypass to anyone. One env-var typo on Vercel
+    // (e.g. forgetting to set MOCK_MODE=false in prod) should NOT silently
+    // open the paywall.
+    if (env.NODE_ENV === "production") {
+      throw new Error(
+        "MOCK_MODE=true is not permitted when NODE_ENV=production. " +
+          "Set MOCK_MODE=false and provide real API keys before deploying.",
+      );
+    }
     return {
       marble: new MockMarbleAdapter(),
       mesh: new MockMeshAdapter(),

@@ -7,7 +7,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { inngest } from "@/lib/inngest/client";
-import { createScene, listAllScenes, listScenesForOwner } from "@/lib/scenes";
+import { createScene, listScenesForOwner, publicScene } from "@/lib/scenes";
 
 export const runtime = "nodejs";
 
@@ -32,6 +32,8 @@ export async function POST(req: Request) {
     name: "scene/uploaded",
     data: { sceneId: scene.id, photoUrl: scene.sourcePhotoUrl },
   });
+  // Return the FULL scene object to the creator (they need their own id +
+  // assets). All other readers go through GET /api/scenes/[id] which strips.
   return NextResponse.json({ scene }, { status: 201 });
 }
 
@@ -39,9 +41,14 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const email = url.searchParams.get("email") ?? undefined;
   const userId = url.searchParams.get("userId") ?? undefined;
-  if (email || userId) {
-    return NextResponse.json({ scenes: listScenesForOwner({ email, userId }) });
+  // Refuse unfiltered listing — every caller must scope to their own scenes.
+  // (Auth-gating lands when Clerk wires up; until then `email` is best-effort.)
+  if (!email && !userId) {
+    return NextResponse.json(
+      { error: "userId or email query parameter required" },
+      { status: 400 },
+    );
   }
-  // No filter — return all (mock-only convenience for the dashboard).
-  return NextResponse.json({ scenes: listAllScenes() });
+  const scenes = listScenesForOwner({ email, userId }).map(publicScene);
+  return NextResponse.json({ scenes });
 }

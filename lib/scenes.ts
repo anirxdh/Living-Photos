@@ -7,11 +7,11 @@
 import { customAlphabet } from "nanoid";
 import { memScenes } from "@/lib/db/memory";
 import type { Scene } from "@/lib/db/schema";
-import { env } from "@/lib/env";
 import { newId } from "@/lib/utils";
 
 const slugAlphabet = "abcdefghijkmnpqrstuvwxyz23456789"; // no easily-confused chars
-const makeSlug = customAlphabet(slugAlphabet, 8);
+// 12 chars × log2(32) ≈ 60 bits of entropy — birthday-resistant + non-enumerable.
+const makeSlug = customAlphabet(slugAlphabet, 12);
 
 export interface CreateSceneInput {
   sourcePhotoUrl: string;
@@ -22,25 +22,11 @@ export interface CreateSceneInput {
 }
 
 export function createScene(input: CreateSceneInput): Scene {
-  const id = newId("scn");
-  const slug = makeSlug();
-  if (env.MOCK_MODE) {
-    return memScenes.insert({
-      id,
-      slug,
-      sourcePhotoUrl: input.sourcePhotoUrl,
-      title: input.title ?? "Untitled memory",
-      description: input.description ?? null,
-      userId: input.userId ?? null,
-      anonymousEmail: input.anonymousEmail ?? null,
-      status: "pending",
-      paid: false,
-    });
-  }
-  // Real DB path lands in phase 6 swap; for now we mirror mock behavior.
+  // Same row shape in both modes. Drizzle persistence lands in the real swap
+  // (lib/db/index.ts) — until then, both paths write to the in-memory store.
   return memScenes.insert({
-    id,
-    slug,
+    id: newId("scn"),
+    slug: makeSlug(),
     sourcePhotoUrl: input.sourcePhotoUrl,
     title: input.title ?? "Untitled memory",
     description: input.description ?? null,
@@ -60,14 +46,41 @@ export function getSceneBySlug(slug: string): Scene | null {
 }
 
 export function listScenesForOwner(opts: { userId?: string; email?: string }): Scene[] {
+  // Prefer userId when both are present (auth wins over query-string email).
+  const ownerCheck = opts.userId
+    ? (s: Scene) => s.userId === opts.userId
+    : opts.email
+      ? (s: Scene) => s.anonymousEmail === opts.email
+      : () => false;
   return memScenes
     .list()
-    .filter((s) => {
-      if (opts.userId && s.userId === opts.userId) return true;
-      if (opts.email && s.anonymousEmail === opts.email) return true;
-      return false;
-    })
+    .filter(ownerCheck)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+}
+
+/**
+ * Public-safe shape of a scene — strips fields a stranger shouldn't see.
+ * The viewer-side render uses these fields only after `paid` flips to true.
+ */
+export function publicScene(s: Scene) {
+  return {
+    id: s.id,
+    slug: s.slug,
+    title: s.title,
+    description: s.description,
+    status: s.status,
+    paid: s.paid,
+    createdAt: s.createdAt,
+    readyAt: s.readyAt,
+    // Owner-only / paid-only fields stripped so slug enumeration can't grab
+    // assets or PII for free.
+    sourcePhotoUrl: s.paid ? s.sourcePhotoUrl : null,
+    spzUrl: s.paid ? s.spzUrl : null,
+    spzUrlLowPoly: s.paid ? s.spzUrlLowPoly : null,
+    meshes: s.paid ? (s.meshes ?? []) : [],
+    ambientSfxUrl: s.paid ? s.ambientSfxUrl : null,
+    narrationUrl: s.paid ? s.narrationUrl : null,
+  };
 }
 
 export function listAllScenes(): Scene[] {

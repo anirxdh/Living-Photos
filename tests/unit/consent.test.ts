@@ -35,6 +35,12 @@ describe("voice consent gate", () => {
       expect(isDenylistedName("Anirudh Vasudevan")).toBe(false);
       expect(isDenylistedName("Grandma")).toBe(false);
     });
+    it("catches obfuscated denylisted names (extra spaces, punctuation, suffixes)", () => {
+      expect(isDenylistedName("Donald  Trump")).toBe(true); // two spaces
+      expect(isDenylistedName("Donald Trump.")).toBe(true); // trailing punctuation
+      expect(isDenylistedName("Donald J Trump")).toBe(true); // middle name
+      expect(isDenylistedName("Donald-Trump")).toBe(true); // hyphen
+    });
   });
 
   describe("createConsentedVoiceClone", () => {

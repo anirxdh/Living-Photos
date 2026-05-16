@@ -2,7 +2,6 @@
  * ElevenLabs SFX adapter — prompt → looping ambient mp3.
  */
 
-import { mockId } from "@/lib/utils";
 import type { SfxAdapter, SfxInput, SfxOutput } from "./types";
 
 const FIXTURE_AMBIENT = "/fixtures/ambient.mp3";
@@ -10,9 +9,8 @@ const SFX_COST_CENTS = 3;
 
 export class MockSfxAdapter implements SfxAdapter {
   async generate(input: SfxInput): Promise<SfxOutput> {
-    // Deterministic — same prompt always returns the same URL with seed.
-    const key = input.cacheKey ?? input.prompt;
-    void mockId("sfx", key); // ensure deterministic mapping is exercised
+    // Mock returns the fixture URL — deterministic by virtue of being a constant.
+    // Real adapter would push the generated mp3 to blob storage and return that URL.
     return {
       url: FIXTURE_AMBIENT,
       durationSeconds: Math.min(input.durationSeconds ?? 10, 22),

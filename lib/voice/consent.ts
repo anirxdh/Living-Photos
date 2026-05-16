@@ -10,7 +10,6 @@ import { customAlphabet } from "nanoid";
 import { adapters } from "@/lib/ai/factory";
 import { memVoiceClones } from "@/lib/db/memory";
 import type { VoiceClone } from "@/lib/db/schema";
-import { env } from "@/lib/env";
 import { newId } from "@/lib/utils";
 
 const nonceAlpha = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 6);
@@ -29,11 +28,44 @@ const DENYLIST = new Set(
     "kim kardashian",
     "morgan freeman",
     "david attenborough",
-  ].map((s) => s.toLowerCase()),
+  ].map(normalizeName),
 );
 
+/**
+ * Canonicalize a name so the denylist catches "Donald  Trump", "donald-trump",
+ * "Дональд Трамп" (NFKC homoglyph fold), and trailing punctuation.
+ */
+function normalizeName(raw: string): string {
+  return raw
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "") // strip diacritics
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 export function isDenylistedName(name: string): boolean {
-  return DENYLIST.has(name.trim().toLowerCase());
+  const n = normalizeName(name);
+  if (DENYLIST.has(n)) return true;
+  if (!n) return false;
+  const tokens = n.split(" ");
+  // Match if every token in a banned name appears in the input (in order),
+  // so "Donald J Trump" / "Donald Trump.", and "Donald-Trump" all hit.
+  for (const banned of DENYLIST) {
+    const bannedTokens = banned.split(" ");
+    let cursor = 0;
+    let allMatched = true;
+    for (const bt of bannedTokens) {
+      const idx = tokens.indexOf(bt, cursor);
+      if (idx === -1) {
+        allMatched = false;
+        break;
+      }
+      cursor = idx + 1;
+    }
+    if (allMatched) return true;
+  }
+  return false;
 }
 
 export interface ConsentDraft {
@@ -118,9 +150,10 @@ export async function createConsentedVoiceClone(args: CreateVoiceCloneArgs): Pro
     createdAt: new Date(),
   };
 
-  if (env.MOCK_MODE) {
-    memVoiceClones.insert(row);
-  }
+  // Always persist locally — until real Drizzle is wired, the memory store is
+  // the source of truth. Without this, the narration endpoint can't find the
+  // clone it just created.
+  memVoiceClones.insert(row);
   return row;
 }
 

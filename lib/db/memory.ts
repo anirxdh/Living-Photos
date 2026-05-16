@@ -5,26 +5,76 @@
  */
 import type { NewScene, Payment, ProcessedWebhookEvent, Scene, VoiceClone } from "./schema";
 
+interface Report {
+  id: string;
+  sceneId: string;
+  reason: string;
+  reporterEmail: string | null;
+  createdAt: Date;
+}
+
 interface Store {
   scenes: Map<string, Scene>;
   voiceClones: Map<string, VoiceClone>;
   payments: Map<string, Payment>;
   processed: Map<string, ProcessedWebhookEvent>; // key = `${provider}:${event_id}`
+  reports: Map<string, Report>;
+  /** Cheap per-IP rate-limit window for the abuse-report endpoint. */
+  reportRate: Map<string, number[]>;
 }
 
-const store: Store = {
-  scenes: new Map(),
-  voiceClones: new Map(),
-  payments: new Map(),
-  processed: new Map(),
-};
+/**
+ * Cross-bundle singleton. Next.js App Router compiles RSC and Node-runtime
+ * route handlers into separate module graphs — without this, `memScenes`
+ * gets two different instances and a POST to /api/scenes is invisible to
+ * a server component reading from /dashboard. Pinning to globalThis keeps
+ * one shared store per Node process.
+ */
+const _globals = globalThis as unknown as { __livingPhotosStore?: Store };
+if (!_globals.__livingPhotosStore) {
+  _globals.__livingPhotosStore = {
+    scenes: new Map(),
+    voiceClones: new Map(),
+    payments: new Map(),
+    processed: new Map(),
+    reports: new Map(),
+    reportRate: new Map(),
+  };
+}
+const store: Store = _globals.__livingPhotosStore;
 
 export function resetMemoryStore() {
   store.scenes.clear();
   store.voiceClones.clear();
   store.payments.clear();
   store.processed.clear();
+  store.reports.clear();
+  store.reportRate.clear();
 }
+
+// --- Reports ----------------------------------------------------------------
+export const memReports = {
+  insert(r: Report) {
+    store.reports.set(r.id, r);
+    return r;
+  },
+  forScene(sceneId: string): Report[] {
+    return Array.from(store.reports.values()).filter((r) => r.sceneId === sceneId);
+  },
+  /** Rolling 1-hour bucket per IP. Returns true if the IP is over `limit`. */
+  isRateLimited(ip: string, limit = 10): boolean {
+    const now = Date.now();
+    const windowMs = 60 * 60_000;
+    const prev = (store.reportRate.get(ip) ?? []).filter((t) => now - t < windowMs);
+    if (prev.length >= limit) {
+      store.reportRate.set(ip, prev);
+      return true;
+    }
+    prev.push(now);
+    store.reportRate.set(ip, prev);
+    return false;
+  },
+};
 
 // --- Scenes -----------------------------------------------------------------
 export const memScenes = {

@@ -6,6 +6,7 @@
  * without network access.
  */
 import crypto from "node:crypto";
+import Stripe from "stripe";
 import { newId } from "@/lib/utils";
 import type {
   CheckoutInput,
@@ -56,35 +57,18 @@ export class MockStripeAdapter implements StripeAdapter {
 }
 
 export class RealStripeAdapter implements StripeAdapter {
+  private stripe: Stripe;
   private webhookSecret: string;
-  private secretKey: string;
 
   constructor(secretKey: string, webhookSecret: string) {
     if (!secretKey) throw new Error("RealStripeAdapter: STRIPE_SECRET_KEY missing");
-    this.secretKey = secretKey;
+    // biome-ignore lint/suspicious/noExplicitAny: Stripe SDK apiVersion type lags the latest pinned date
+    this.stripe = new Stripe(secretKey, { apiVersion: "2026-04-22.dahlia" as any });
     this.webhookSecret = webhookSecret;
   }
 
-  private async client() {
-    const mod = (await import("stripe")) as unknown as {
-      default: new (key: string, opts?: { apiVersion?: string }) => unknown;
-    };
-    const Stripe = mod.default;
-    return new Stripe(this.secretKey, { apiVersion: "2026-04-22.dahlia" }) as {
-      checkout: {
-        sessions: {
-          create(args: Record<string, unknown>): Promise<{ id: string; url: string | null }>;
-        };
-      };
-      webhooks: {
-        constructEvent(body: string, sig: string, secret: string): StripeWebhookEvent;
-      };
-    };
-  }
-
   async createCheckoutSession(input: CheckoutInput): Promise<CheckoutOutput> {
-    const stripe = await this.client();
-    const session = await stripe.checkout.sessions.create({
+    const session = await this.stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [
@@ -109,20 +93,12 @@ export class RealStripeAdapter implements StripeAdapter {
   }
 
   verifyAndParseWebhook(input: StripeWebhookVerifyInput): StripeWebhookEvent {
-    // We can't make this async (interface contract), so we lazily load synchronously.
-    // For Node 22+ ESM, require() via createRequire is the standard escape hatch.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createRequire } = require("node:module") as {
-      createRequire: (filename: string) => NodeJS.Require;
-    };
-    const require_ = createRequire(__filename ?? import.meta.url);
-    const Stripe = require_("stripe");
-    const stripe = new Stripe(this.secretKey, { apiVersion: "2026-04-22.dahlia" });
-    return stripe.webhooks.constructEvent(
+    // Top-level SDK import, no createRequire dance — ESM safe.
+    return this.stripe.webhooks.constructEvent(
       input.rawBody,
       input.signature,
       this.webhookSecret,
-    ) as StripeWebhookEvent;
+    ) as unknown as StripeWebhookEvent;
   }
 }
 

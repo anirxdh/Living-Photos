@@ -22,19 +22,22 @@ test.describe("Full flow (MOCK_MODE)", () => {
     await page.getByTestId("submit-button").click();
 
     // Should navigate to /scene/[slug]
-    await expect(page).toHaveURL(/\/scene\/[a-z0-9]{8}$/);
-    await expect(page.getByText(/Grandma's kitchen/)).toBeVisible();
+    await expect(page).toHaveURL(/\/scene\/[a-z0-9]{12}$/);
+    await expect(page.getByRole("heading", { name: "Grandma's kitchen" })).toBeVisible();
+    // Mock pipeline runs in <1s; should arrive at the unlock CTA
+    await expect(page.getByRole("button", { name: /Unlock memory/ })).toBeVisible();
   });
 
   test("dashboard lists scenes after creation", async ({ page }) => {
-    // Use the API directly to seed
+    // Unique title because dev-server in-memory store is shared across test runs.
+    const title = `Seed scene ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const res = await page.request.post("/api/scenes", {
-      data: { sourcePhotoUrl: "https://example.test/seed.jpg", title: "Seed scene" },
+      data: { sourcePhotoUrl: "https://example.test/seed.jpg", title },
     });
     expect(res.status()).toBe(201);
 
     await page.goto("/dashboard");
-    await expect(page.getByText("Seed scene")).toBeVisible();
+    await expect(page.getByText(title)).toBeVisible();
   });
 });
 

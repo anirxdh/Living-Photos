@@ -11,14 +11,15 @@ import { adapters } from "@/lib/ai/factory";
 import { signMockWebhook } from "@/lib/ai/stripe";
 import { env } from "@/lib/env";
 import { fulfillCheckoutEvent } from "@/lib/payments";
-import { newId } from "@/lib/utils";
 
 export const runtime = "nodejs";
 
 const Body = z.object({ sceneId: z.string().min(1), sessionId: z.string().min(1) });
 
 export async function POST(req: Request) {
-  if (!env.MOCK_MODE) {
+  // Double-gate: must be MOCK_MODE AND never reachable in prod (defence in depth
+  // against an env-flag misconfiguration leaking the payment bypass to prod).
+  if (!env.MOCK_MODE || env.NODE_ENV === "production") {
     return NextResponse.json({ error: "mock-mode only" }, { status: 400 });
   }
   const parsed = Body.safeParse(await req.json().catch(() => null));
@@ -41,6 +42,5 @@ export async function POST(req: Request) {
   // Round-trip through verify so we exercise the same code path as real webhooks.
   const evt = adapters().stripe.verifyAndParseWebhook({ rawBody: eventBody, signature: sig });
   const out = fulfillCheckoutEvent(evt);
-  void newId; // keep import warm
   return NextResponse.json({ mutated: out.mutated, reason: out.reason });
 }

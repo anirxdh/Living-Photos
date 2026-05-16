@@ -27,8 +27,9 @@ Built on top of the open-source [`image-blaster`](https://github.com/neilsonnn/i
 ```bash
 pnpm install
 pnpm dev               # runs at http://localhost:3000
-pnpm test              # 96 unit + contract tests in <1s
-pnpm test:e2e          # Playwright across Chromium + WebKit mobile
+pnpm test              # 122 unit + contract tests in <2s
+pnpm test:e2e          # Playwright across Chromium + WebKit mobile (8 specs)
+pnpm seed              # in another shell — seeds 3 demo scenes
 ```
 
 To swap to real APIs, fill out `.env.local` with your keys and set `MOCK_MODE=false`. See [`docs/SWAP_TO_REAL.md`](./docs/SWAP_TO_REAL.md).
@@ -46,8 +47,8 @@ To swap to real APIs, fill out `.env.local` with your keys and set `MOCK_MODE=fa
 | Database     | Drizzle ORM + Neon Postgres (in-memory mirror used for MOCK_MODE)          |
 | Storage      | Vercel Blob (mock writes to in-memory store)                               |
 | Payments     | Stripe 22 · Checkout · raw-body webhook with idempotency table             |
-| Voice        | `@elevenlabs/elevenlabs-js` 2.47 — IVC + TTS narration + SFX               |
-| 3D gen       | World Labs Marble (.spz) + FAL Hunyuan3D (.glb)                            |
+| Voice        | ElevenLabs HTTP API — IVC + TTS narration + SFX (raw fetch, no SDK weight) |
+| 3D gen       | World Labs Marble (.spz) + FAL Hunyuan3D (.glb) — via raw fetch            |
 | Lint/format  | Biome 2.4                                                                  |
 | Tests        | Vitest (unit + contract) · Playwright (e2e Chromium + WebKit mobile)       |
 
@@ -158,17 +159,18 @@ See [`docs/DEMO.md`](./docs/DEMO.md) for the full script + recording checklist.
 
 ## Status
 
-- ✅ Phase 1 — Foundation + mock-first adapter infrastructure (49 tests)
-- ✅ Phase 2 — Photo upload + scene persistence (+7 tests)
-- ✅ Phase 3 — Inngest pipeline + status polling
+- ✅ Phase 1 — Foundation + mock-first adapter infrastructure
+- ✅ Phase 2 — Photo upload + scene persistence
+- ✅ Phase 3 — Inngest pipeline + mock runner + status polling
 - ✅ Phase 4 — Three.js viewer with payment gate
-- ✅ Phase 5 — Voice consent gate + IVC (+11 tests)
-- ✅ Phase 6 — Stripe Checkout + webhook with idempotency (+15 tests across api + payments)
+- ✅ Phase 5 — Voice consent gate + IVC + Memory Letter
+- ✅ Phase 6 — Stripe Checkout + raw-body webhook with `processed_webhook_events` idempotency floor
 - ✅ Phase 7 — Real-adapter contracts (auto-activate when keys present)
-- ✅ Phase 8 — Share URLs + OG image + abuse reporting (+3 tests)
-- ✅ Phase 9 — Demo prep (this README + docs/DEMO.md)
+- ✅ Phase 8 — Share URLs + OG image + rate-limited abuse reports
+- ✅ Phase 9 — Demo prep (this README + docs/DEMO.md + `pnpm seed`)
+- ✅ Security pass — MOCK_MODE refused in production, mock-fulfill double-gated, public-figure denylist hardened (NFKD + token-match), scene API strips PII for non-owners, email HTML-escaped
 
-**100 tests** (96 passing + 4 skipped real-adapter slots). Build clean. Typecheck clean. Lint clean.
+**127 tests** (122 passing + 5 skipped real-adapter slots) across 24 files. 8 Playwright e2e specs. Build clean. Typecheck clean. Lint clean.
 
 ---
 

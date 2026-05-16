@@ -19,7 +19,8 @@ describe("BlobAdapter contract: MockBlobAdapter", () => {
       pathname: "uploads/abc.jpg",
       contentType: "image/jpeg",
     });
-    expect(out.url).toContain("upload");
+    expect(out.url).toContain("/api/blob/upload");
+    expect(out.url).toContain("uploads%2Fabc.jpg");
     expect(out.publicUrl).toContain("uploads/abc.jpg");
   });
 

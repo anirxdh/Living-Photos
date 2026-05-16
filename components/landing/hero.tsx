@@ -2,7 +2,9 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { Magnetic } from "@/components/motion/magnetic";
 import { MouseParallax } from "@/components/motion/parallax";
+import { Tilt3D } from "@/components/motion/tilt-3d";
 import { BrowserFrame } from "@/components/ui/browser-frame";
 import { Button } from "@/components/ui/button";
 
@@ -111,16 +113,21 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Button href="/create" size="lg" variant="primary">
-            Bring a memory to life
-          </Button>
-          <Button href="#how-it-works" size="lg" variant="secondary">
-            See how it works
-          </Button>
+          <Magnetic radius={140} strength={0.4}>
+            <Button href="/create" size="lg" variant="primary">
+              Bring a memory to life
+            </Button>
+          </Magnetic>
+          <Magnetic radius={120} strength={0.3}>
+            <Button href="#how-it-works" size="lg" variant="secondary">
+              See how it works
+            </Button>
+          </Magnetic>
         </motion.div>
       </motion.div>
 
-      {/* Floating browser mockup — the "real product" floats below the headline */}
+      {/* Floating browser mockup — the "real product" floats below the headline.
+          Tilt3D wraps it so the whole composition catches the light on mouse move. */}
       <motion.div
         className="relative z-10 mx-auto mt-24 max-w-5xl px-6"
         style={{ y: mockupY }}
@@ -128,7 +135,9 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.3, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
       >
-        <MockupComposition />
+        <Tilt3D max={5} perspective={1600}>
+          <MockupComposition />
+        </Tilt3D>
       </motion.div>
     </section>
   );

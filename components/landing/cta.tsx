@@ -1,5 +1,6 @@
 "use client";
 
+import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 
@@ -28,10 +29,12 @@ export function CTA() {
           </p>
         </Reveal>
         <Reveal delay={0.3}>
-          <div className="mt-12">
-            <Button href="/create" size="lg" variant="primary">
-              Bring a memory to life
-            </Button>
+          <div className="mt-12 inline-block">
+            <Magnetic radius={160} strength={0.45}>
+              <Button href="/create" size="lg" variant="primary">
+                Bring a memory to life
+              </Button>
+            </Magnetic>
           </div>
         </Reveal>
       </div>

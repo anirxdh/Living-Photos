@@ -141,17 +141,91 @@ Deferred to post-hackathon week 1-2 milestone.
 
 ## Traceability
 
-Empty initially. Populated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (pending roadmapper) | | |
+| FND-01 | Phase 1 | Pending |
+| FND-02 | Phase 1 | Pending |
+| FND-03 | Phase 1 | Pending |
+| FND-04 | Phase 1 | Pending |
+| FND-05 | Phase 1 | Pending |
+| FND-06 | Phase 1 | Pending |
+| FND-07 | Phase 1 | Pending |
+| FND-08 | Phase 1 | Pending |
+| FND-09 | Phase 1 | Pending |
+| UPL-01 | Phase 2 | Pending |
+| UPL-02 | Phase 2 | Pending |
+| UPL-03 | Phase 2 | Pending |
+| UPL-04 | Phase 2 | Pending |
+| UPL-05 | Phase 2 | Pending |
+| UPL-06 | Phase 2 | Pending |
+| PIP-01 | Phase 3 | Pending |
+| PIP-02 | Phase 3 | Pending |
+| PIP-03 | Phase 3 | Pending |
+| PIP-04 | Phase 3 | Pending |
+| PIP-05 | Phase 3 | Pending |
+| PIP-06 | Phase 7 | Pending |
+| PIP-07 | Phase 7 | Pending |
+| VWR-01 | Phase 4 | Pending |
+| VWR-02 | Phase 4 | Pending |
+| VWR-03 | Phase 4 | Pending |
+| VWR-04 | Phase 4 | Pending |
+| VWR-05 | Phase 4 | Pending |
+| VWR-06 | Phase 4 | Pending |
+| VWR-07 | Phase 5 | Pending |
+| VWR-08 | Phase 4 | Pending |
+| VWR-09 | Phase 4 | Pending |
+| VWR-10 | Phase 4 | Pending |
+| VOC-01 | Phase 5 | Pending |
+| VOC-02 | Phase 5 | Pending |
+| VOC-03 | Phase 5 | Pending |
+| VOC-04 | Phase 5 | Pending |
+| VOC-05 | Phase 5 | Pending |
+| VOC-06 | Phase 5 | Pending |
+| VOC-07 | Phase 5 | Pending |
+| VOC-08 | Phase 5 | Pending |
+| VOC-09 | Phase 5 | Pending |
+| VOC-10 | Phase 5 | Pending |
+| PAY-01 | Phase 6 | Pending |
+| PAY-02 | Phase 6 | Pending |
+| PAY-03 | Phase 6 | Pending |
+| PAY-04 | Phase 6 | Pending |
+| PAY-05 | Phase 6 | Pending |
+| PAY-06 | Phase 6 | Pending |
+| PAY-07 | Phase 6 | Pending |
+| PAY-08 | Phase 6 | Pending |
+| PAY-09 | Phase 6 | Pending |
+| SHR-01 | Phase 8 | Pending |
+| SHR-02 | Phase 8 | Pending |
+| SHR-03 | Phase 8 | Pending |
+| SHR-04 | Phase 8 | Pending |
+| SHR-05 | Phase 8 | Pending |
+| SHR-06 | Phase 8 | Pending |
+| REL-01 | Phase 2 / Phase 3 | Pending |
+| REL-02 | Phase 4 | Pending |
+| REL-03 | Phase 2 / Phase 5 / Phase 6 | Pending |
+| REL-04 | Phase 3 / Phase 7 | Pending |
+| REL-05 | Phase 2 / Phase 4 / Phase 8 | Pending |
+| REL-06 | Phase 7 / Phase 9 | Pending |
+| REL-07 | Phase 7 | Pending |
+| REL-08 | Phase 3 | Pending |
+| DEM-01 | Phase 9 | Pending |
+| DEM-02 | Phase 7 | Pending |
+| DEM-03 | Phase 9 | Pending |
+| DEM-04 | Phase 9 | Pending |
+| DEM-05 | Phase 9 | Pending |
 
 **Coverage:**
 - v1 requirements: 51 total
-- Mapped to phases: 0 (pending)
-- Unmapped: 51 ⚠️
+- Mapped to phases: 51 (100%) ✓
+- Unmapped: 0
+
+### Coverage Notes
+
+- **REL-* (Reliability & Tests) requirements span multiple phases** by design — each phase ships its own testing scope. The "primary phase" column shows where the requirement is first introduced; the "final completion" gate is the latest phase listed.
+- **VWR-07 (narration in viewer)** lands in Phase 5 (Voice) rather than Phase 4 (Viewer) because narration audio depends on a completed voice clone, which Phase 5 produces. The viewer's `<PositionalAudio>` infrastructure for ambient SFX (VWR-06) is in Phase 4; VWR-07 plugs voice into the same primitives in Phase 5.
+- **PIP-06 + PIP-07 (real-mode pipeline + cost telemetry)** are in Phase 7 (Real-Adapter Swap), not Phase 3 (Pipeline Orchestration). Phase 3 establishes the orchestration pattern with mocks; Phase 7 swaps in real adapters and turns on cost telemetry.
+- **DEM-02 (3-5 pre-rendered scenes)** is in Phase 7, not Phase 9, because pre-rendering requires real adapters to be live. Phase 9 verifies these scenes load correctly on the demo machine.
 
 ---
 *Requirements defined: 2026-05-15*
-*Last updated: 2026-05-15 after initial definition*
+*Last updated: 2026-05-15 after roadmap traceability mapping*

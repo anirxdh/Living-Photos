@@ -4,6 +4,7 @@
 import { afterEach, beforeEach } from "vitest";
 import { resetAdapters } from "@/lib/ai/factory";
 import { resetMemoryStore } from "@/lib/db/memory";
+import { clearSentEmails } from "@/lib/email";
 
 process.env.MOCK_MODE = "true";
 // NODE_ENV is readonly under @types/node 22+; vitest already sets it to "test".
@@ -11,9 +12,11 @@ process.env.MOCK_MODE = "true";
 beforeEach(() => {
   resetMemoryStore();
   resetAdapters();
+  clearSentEmails();
 });
 
 afterEach(() => {
   resetMemoryStore();
   resetAdapters();
+  clearSentEmails();
 });

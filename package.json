@@ -19,15 +19,16 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "seed": "tsx scripts/seed-demo.ts"
   },
   "dependencies": {
     "@elevenlabs/elevenlabs-js": "^2.47.0",
     "@fal-ai/client": "^1.6.0",
     "@neondatabase/serverless": "^1.0.1",
-    "@sentry/nextjs": "^9.0.0",
     "@react-three/drei": "^10.5.0",
     "@react-three/fiber": "^9.6.1",
+    "@sentry/nextjs": "^9.0.0",
     "@vercel/blob": "^1.0.0",
     "@vercel/og": "^0.7.0",
     "class-variance-authority": "^0.7.1",
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
     "@playwright/test": "^1.49.0",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
@@ -61,7 +63,7 @@
     "drizzle-kit": "^0.30.0",
     "happy-dom": "^16.0.0",
     "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0",
+    "tsx": "^4.22.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.8"
   }

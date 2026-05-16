@@ -7,6 +7,7 @@
  */
 import { adapters } from "@/lib/ai/factory";
 import { memPayments, memProcessed } from "@/lib/db/memory";
+import { sceneReadyEmail, sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { getScene, markScenePaid } from "@/lib/scenes";
 import { newId } from "@/lib/utils";
@@ -61,7 +62,14 @@ interface FulfillResult {
 export function fulfillCheckoutEvent(evt: {
   id: string;
   type: string;
-  data: { object: { id: string; metadata?: Record<string, string>; amount_total?: number } };
+  data: {
+    object: {
+      id: string;
+      metadata?: Record<string, string>;
+      amount_total?: number;
+      customer_email?: string;
+    };
+  };
 }): FulfillResult {
   const first = memProcessed.markProcessed({
     id: newId("proc"),
@@ -80,5 +88,20 @@ export function fulfillCheckoutEvent(evt: {
   const scene = getScene(sceneId);
   if (!scene) return { mutated: false, reason: "scene_not_found" };
   markScenePaid(sceneId, evt.data.object.amount_total ?? PRICE_CENTS);
+
+  // Best-effort email — never block the webhook ack on send failure.
+  const recipient = evt.data.object.customer_email ?? scene.anonymousEmail ?? null;
+  if (recipient) {
+    sendEmail(
+      sceneReadyEmail({
+        to: recipient,
+        title: scene.title,
+        shareUrl: `${env.NEXT_PUBLIC_APP_URL}/s/${scene.slug}`,
+      }),
+    ).catch(() => {
+      /* swallowed — Sentry would catch real production failures */
+    });
+  }
+
   return { mutated: true, sceneId };
 }

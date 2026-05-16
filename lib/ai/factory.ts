@@ -7,6 +7,7 @@
 import { env } from "@/lib/env";
 import { MockBlobAdapter, RealBlobAdapter } from "./blob";
 import { MockMeshAdapter, RealMeshAdapter } from "./fal";
+import { type AvatarAdapter, MockAvatarAdapter, RealAvatarAdapter } from "./hedra";
 import { MockMarbleAdapter, RealMarbleAdapter } from "./marble";
 import { MockSfxAdapter, RealSfxAdapter } from "./sfx";
 import { MockStripeAdapter, RealStripeAdapter } from "./stripe";
@@ -27,6 +28,8 @@ export interface Adapters {
   voice: VoiceAdapter;
   stripe: StripeAdapter;
   blob: BlobAdapter;
+  /** V3 — talking-avatar overlay. Stubbed adapter today, real Hedra later. */
+  avatar: AvatarAdapter;
 }
 
 let cached: Adapters | null = null;
@@ -41,6 +44,7 @@ function build(): Adapters {
       voice: new MockVoiceAdapter(),
       stripe: new MockStripeAdapter(),
       blob: new MockBlobAdapter(),
+      avatar: new MockAvatarAdapter(),
     };
   }
   return {
@@ -50,6 +54,7 @@ function build(): Adapters {
     voice: new RealVoiceAdapter(env.ELEVENLABS_API_KEY),
     stripe: new RealStripeAdapter(env.STRIPE_SECRET_KEY, env.STRIPE_WEBHOOK_SECRET),
     blob: new RealBlobAdapter(env.BLOB_READ_WRITE_TOKEN),
+    avatar: new RealAvatarAdapter(env.HEDRA_API_KEY),
   };
 }
 

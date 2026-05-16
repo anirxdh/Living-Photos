@@ -27,6 +27,7 @@ const schema = z
     WORLD_LABS_API_KEY: z.string().optional().default(""),
     FAL_KEY: z.string().optional().default(""),
     ELEVENLABS_API_KEY: z.string().optional().default(""),
+    HEDRA_API_KEY: z.string().optional().default(""),
 
     STRIPE_SECRET_KEY: z.string().default("sk_test_placeholder"),
     STRIPE_WEBHOOK_SECRET: z.string().default("whsec_placeholder"),

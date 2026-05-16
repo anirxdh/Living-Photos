@@ -55,7 +55,10 @@ export class RealMeshAdapter implements MeshAdapter {
     const submitted = await submitHunyuan3D({
       apiKey: this.apiKey,
       input_image_url: input.imageUrl,
-      face_count: input.facesTarget ?? 50_000,
+      // 150k faces = high-detail PBR meshes. Hunyuan supports up to 1.5M but
+      // 150k is the sweet spot — Spark.js renders smoothly, Vercel Blob stays
+      // light, and the visual gain past 150k is minimal for room-scale objects.
+      face_count: input.facesTarget ?? 150_000,
       generate_type: "Normal",
       enable_pbr: true,
     });

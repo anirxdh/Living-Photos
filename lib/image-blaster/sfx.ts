@@ -82,7 +82,12 @@ export async function cloneVoice(args: IvcArgs): Promise<{ voiceId: string }> {
 export interface NarrateArgs {
   voiceId: string;
   text: string;
-  /** Model id. Defaults to `eleven_multilingual_v2`. */
+  /**
+   * Model id. Defaults to `eleven_v3` — released March 2026, most expressive
+   * TTS model in the line. Supports inline audio tags like `[whispers]`,
+   * `[warm]`, `[sighs]` which the caller can embed directly in `text` for
+   * memorial-grade narration.
+   */
   modelId?: string;
   apiKey: string;
 }
@@ -97,8 +102,10 @@ export async function generateNarration(args: NarrateArgs): Promise<ArrayBuffer>
     },
     body: JSON.stringify({
       text: args.text,
-      model_id: args.modelId ?? "eleven_multilingual_v2",
-      voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+      model_id: args.modelId ?? "eleven_v3",
+      // Slightly higher similarity_boost for memorial use — we want the clone
+      // to feel like *them*, not a generic synthesized read.
+      voice_settings: { stability: 0.55, similarity_boost: 0.85, style: 0.3 },
     }),
   });
   if (!res.ok) {

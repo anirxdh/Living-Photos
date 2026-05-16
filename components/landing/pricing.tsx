@@ -22,8 +22,7 @@ export function Pricing() {
         </Reveal>
         <Reveal delay={0.1}>
           <Headline size="section">
-            One photo.{" "}
-            <span className="italic text-[var(--color-foreground-secondary)]">Forever yours.</span>
+            One photo. <span className="italic headline-soft">Forever yours.</span>
           </Headline>
         </Reveal>
 
@@ -33,7 +32,7 @@ export function Pricing() {
               <div>
                 <p className="eyebrow">Single memory</p>
                 <p className="mt-3 flex items-baseline gap-2">
-                  <span className="headline text-7xl text-[var(--color-foreground)]">$19</span>
+                  <span className="headline text-7xl">$19</span>
                   <span className="text-sm text-[var(--color-foreground-muted)]">
                     once · no subscription
                   </span>

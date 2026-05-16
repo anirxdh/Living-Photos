@@ -65,14 +65,14 @@ export function Cursor() {
     <>
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[9999] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-foreground)] mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-foreground)]"
         style={{ x, y, opacity: visible ? 1 : 0 }}
         animate={{ scale: hovering ? 0 : 1 }}
         transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[9998] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--color-foreground)] mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[9998] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[var(--color-foreground)]"
         style={{
           x: ringX,
           y: ringY,

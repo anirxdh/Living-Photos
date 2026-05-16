@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 
 export function CTA() {
   return (
-    <section className="relative overflow-hidden bg-[var(--color-bg)] py-32 lg:py-48">
+    <section className="relative overflow-hidden bg-[var(--color-bg)] py-40 lg:py-56">
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at top, rgba(217,165,96,0.18) 0%, transparent 60%)",
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(184,132,92,0.18) 0%, transparent 70%)",
         }}
       />
       <div className="relative mx-auto max-w-4xl px-6 text-center">

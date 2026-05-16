@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  /* Warm dark — cinematic memorial palette */
-  --color-bg: #0a0a0b;
-  --color-surface: #141415;
-  --color-surface-elevated: #1a1a1c;
-  --color-border: #1f1f22;
-  --color-border-strong: #2a2a2e;
+  /* Light, misty Synex-style palette */
+  --color-bg: #f7f5f0;            /* warm cream/parchment */
+  --color-bg-secondary: #ece8df;  /* deeper cream */
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-border: #e3ddd1;
+  --color-border-strong: #cdc6b6;
 
-  --color-foreground: #f5f2ec;
-  --color-foreground-secondary: #a6a097;
-  --color-foreground-muted: #6b655b;
+  --color-foreground: #14110d;        /* near-black ink */
+  --color-foreground-secondary: #6b655b;
+  --color-foreground-muted: #9c9484;
 
-  --color-accent: #d9a560;
-  --color-accent-soft: #b8845c;
-  --color-accent-glow: rgba(217, 165, 96, 0.18);
+  --color-accent: #b8845c;            /* warm amber, deeper for light mode */
+  --color-accent-soft: #d9a560;
+  --color-accent-glow: rgba(184, 132, 92, 0.12);
 
-  --color-destructive: #d97070;
-  --color-success: #7fa68b;
+  --color-destructive: #b8484a;
+  --color-success: #4a7a5a;
 
   /* shadcn compat aliases */
   --color-background: var(--color-bg);
   --color-primary: var(--color-foreground);
   --color-primary-foreground: var(--color-bg);
-  --color-muted: var(--color-surface);
+  --color-muted: var(--color-bg-secondary);
   --color-muted-foreground: var(--color-foreground-secondary);
   --color-input: var(--color-border);
   --color-ring: var(--color-accent);
   --color-card: var(--color-surface);
   --color-card-foreground: var(--color-foreground);
-  --color-destructive-foreground: var(--color-foreground);
+  --color-destructive-foreground: var(--color-surface);
 
   --radius: 1rem;
   --radius-sm: 0.5rem;
@@ -62,12 +63,30 @@ body {
   overflow-x: hidden;
 }
 
-/* Cinematic heading style */
+/* Misty atmospheric backdrop — radial gradient that suggests fog */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 250, 240, 0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 30% 80%, rgba(217, 165, 96, 0.06) 0%, transparent 60%),
+    var(--color-bg);
+  pointer-events: none;
+}
+
+/* Cinematic heading — light-weight serif like Synex */
 .headline {
   font-family: var(--font-serif);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: -0.025em;
   line-height: 1;
+  color: var(--color-foreground);
+}
+
+.headline-soft {
+  color: var(--color-foreground-muted);
 }
 
 .eyebrow {
@@ -79,58 +98,57 @@ body {
   color: var(--color-foreground-muted);
 }
 
-/* Glassmorphic card */
+/* Glassmorphic floating card — Synex's signature widget look */
 .glass {
-  background: rgba(20, 20, 21, 0.55);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow:
-    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
-    0 20px 60px -20px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(0, 0, 0, 0.3);
+    0 1px 0 0 rgba(255, 255, 255, 0.9) inset,
+    0 4px 16px -4px rgba(20, 17, 13, 0.08),
+    0 20px 48px -16px rgba(20, 17, 13, 0.14);
 }
 
-/* Premium button base */
+.glass-dark {
+  background: rgba(20, 17, 13, 0.92);
+  color: var(--color-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 48px -16px rgba(20, 17, 13, 0.4),
+    0 1px 0 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Premium button — Synex uses solid black with subtle hover lift */
 .btn-primary {
   background: var(--color-foreground);
   color: var(--color-bg);
   font-weight: 500;
   transition:
     transform 400ms var(--ease-out-expo),
-    box-shadow 400ms var(--ease-out-expo),
-    background 400ms var(--ease-out-expo);
+    box-shadow 400ms var(--ease-out-expo);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 10px 40px -10px var(--color-accent-glow),
-    0 0 0 1px var(--color-accent-soft);
+    0 12px 28px -8px rgba(20, 17, 13, 0.35);
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
   color: var(--color-foreground);
   border: 1px solid var(--color-border-strong);
+  font-weight: 500;
   transition: all 400ms var(--ease-out-expo);
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-foreground-secondary);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-/* Subtle film grain */
-.grain::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  opacity: 0.04;
-  pointer-events: none;
-  z-index: 100;
-  mix-blend-mode: overlay;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--color-foreground);
 }
 
 /* Custom cursor (desktop only) */
@@ -153,7 +171,7 @@ body {
   }
 }
 
-/* Hide scrollbar but keep scroll */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -169,21 +187,24 @@ body {
   background: var(--color-foreground-muted);
 }
 
-/* Selection */
 ::selection {
   background: var(--color-accent);
   color: var(--color-bg);
 }
 
-/* Smooth focus ring */
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: 4px;
 }
 
-/* Subtle drift animation for hero particles */
+/* Drift animation for floating widget cards */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(0, -8px); }
+}
+
 @keyframes drift {
   0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(20px, -30px); }
+  50% { transform: translate(8px, -12px); }
 }

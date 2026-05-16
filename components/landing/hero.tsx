@@ -3,14 +3,20 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { MouseParallax } from "@/components/motion/parallax";
+import { BrowserFrame } from "@/components/ui/browser-frame";
 import { Button } from "@/components/ui/button";
 
 /**
- * Full-viewport cinematic hero. A warm Unsplash interior with grain + vignette
- * sits behind a giant serif headline. The background drifts slightly with
- * the mouse; the headline + CTA fade up on mount. Scroll triggers a slow
- * vertical parallax + opacity fade so the next section feels like it's
- * lifting the hero out of frame.
+ * Synex-style layered hero.
+ *
+ *   Z-stack (back → front):
+ *     - Misty cream background
+ *     - Foggy mountain photo, faded
+ *     - Rock/boulder edges (left + right) with mouse parallax
+ *     - Center column: eyebrow, big serif headline, subhead, CTAs
+ *     - Floating browser mockup of the 3D scene with glassmorphic widget cards
+ *
+ *   Each layer reacts to the cursor at a different intensity, creating depth.
  */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -18,89 +24,97 @@ export function Hero() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const mockupY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   return (
-    <section ref={ref} className="relative h-[100svh] w-full overflow-hidden bg-[var(--color-bg)]">
-      {/* Background image with mouse parallax + scroll parallax */}
-      <motion.div className="absolute inset-0" style={{ y: bgY }}>
-        <MouseParallax intensity={16} className="absolute inset-[-3%]">
-          <div
-            className="h-full w-full bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=2400&q=85&auto=format&fit=crop')",
-            }}
-          />
-        </MouseParallax>
-      </motion.div>
-
-      {/* Warm gradient + vignette */}
+    <section ref={ref} className="relative w-full overflow-hidden bg-[var(--color-bg)] pb-32 pt-40">
+      {/* Background mist */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,10,11,0.65) 0%, rgba(10,10,11,0.4) 35%, rgba(10,10,11,0.75) 75%, rgba(10,10,11,0.95) 100%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,11,0.6) 100%)",
+            "radial-gradient(ellipse 100% 70% at 50% 0%, rgba(255,255,255,0.8) 0%, transparent 60%)",
         }}
       />
 
-      {/* Drifting dust motes */}
-      <DustMotes />
+      {/* Left rock — drifts a little with mouse */}
+      <MouseParallax
+        intensity={20}
+        className="absolute left-0 top-0 z-[1] h-full w-[28vw] max-w-[420px]"
+      >
+        <div
+          className="h-full w-full bg-cover bg-left-top opacity-95"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?w=1200&q=85&auto=format&fit=crop')",
+            backgroundPosition: "right center",
+            maskImage: "linear-gradient(to right, black 65%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, black 65%, transparent 100%)",
+          }}
+        />
+      </MouseParallax>
+
+      {/* Right rock — slightly different intensity for depth */}
+      <MouseParallax
+        intensity={24}
+        className="absolute right-0 top-0 z-[1] h-full w-[28vw] max-w-[420px]"
+      >
+        <div
+          className="h-full w-full bg-cover bg-right-top opacity-95"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=1200&q=85&auto=format&fit=crop')",
+            backgroundPosition: "left center",
+            maskImage: "linear-gradient(to left, black 65%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to left, black 65%, transparent 100%)",
+          }}
+        />
+      </MouseParallax>
 
       {/* Foreground content */}
       <motion.div
-        className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
-        style={{ y: contentY, opacity }}
+        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center"
+        style={{ opacity }}
       >
         <motion.p
-          className="eyebrow mb-8"
-          initial={{ opacity: 0, y: 12 }}
+          className="eyebrow"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
-          For everyone you've ever loved
+          Memory reimagined
         </motion.p>
 
         <motion.h1
-          className="headline text-[clamp(56px,11vw,164px)] leading-[0.92] text-[var(--color-foreground)]"
-          initial={{ opacity: 0, y: 24 }}
+          className="headline mt-8 text-[clamp(48px,9vw,128px)] leading-[0.95]"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-          Step inside
-          <br />
-          <span className="italic text-[var(--color-foreground-secondary)]">a memory.</span>
+          <span className="block headline-soft">Step inside</span>
+          <span className="block">a memory you can walk through.</span>
         </motion.h1>
 
         <motion.p
-          className="mt-8 max-w-xl text-balance text-base text-[var(--color-foreground-secondary)] md:text-lg"
+          className="mt-10 max-w-xl text-balance text-base text-[var(--color-foreground-secondary)] md:text-lg"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
-          Upload one old photograph. Walk into it in 3D. Hear the voice of someone you loved play
-          softly from inside the room.
+          Upload one photograph. Walk into it in 3D. Hear the voice of someone you loved play softly
+          from inside the room.
         </motion.p>
 
         <motion.div
-          className="mt-12 flex flex-wrap items-center justify-center gap-3"
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.3, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
         >
           <Button href="/create" size="lg" variant="primary">
-            Bring a memory to life — $19
+            Bring a memory to life
           </Button>
           <Button href="#how-it-works" size="lg" variant="secondary">
             See how it works
@@ -108,53 +122,106 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll cue */}
+      {/* Floating browser mockup — the "real product" floats below the headline */}
       <motion.div
-        aria-hidden
-        className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
+        className="relative z-10 mx-auto mt-24 max-w-5xl px-6"
+        style={{ y: mockupY }}
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.3, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
       >
-        <motion.div
-          className="flex h-10 w-6 items-start justify-center rounded-full border border-[var(--color-foreground-muted)]"
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-        >
-          <span className="mt-2 h-1.5 w-0.5 rounded-full bg-[var(--color-foreground-secondary)]" />
-        </motion.div>
+        <MockupComposition />
       </motion.div>
     </section>
   );
 }
 
-/** Slow-drifting backlit dust particles. Pure CSS — light on perf. */
-const DUST_MOTES = Array.from({ length: 16 }, (_, i) => ({
-  id: `mote-${i}`,
-  size: 1 + Math.random() * 2.5,
-  left: Math.random() * 100,
-  top: Math.random() * 100,
-  duration: 8 + Math.random() * 16,
-  delay: Math.random() * -10,
-}));
-
-function DustMotes() {
+/**
+ * The hero's centerpiece — a browser-framed 3D scene preview with floating
+ * glassmorphic widget cards around it, lifted directly from the Synex pattern.
+ */
+function MockupComposition() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0">
-      {DUST_MOTES.map((m) => (
-        <span
-          key={m.id}
-          className="absolute rounded-full bg-[var(--color-accent)] opacity-30 blur-[1px]"
+    <div className="relative">
+      <BrowserFrame url="livingphotos.app/s/grandma-kitchen-1995">
+        <div
+          className="relative aspect-[16/10] w-full overflow-hidden"
           style={{
-            width: `${m.size}px`,
-            height: `${m.size}px`,
-            left: `${m.left}%`,
-            top: `${m.top}%`,
-            animation: `drift ${m.duration}s ease-in-out infinite`,
-            animationDelay: `${m.delay}s`,
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=2000&q=85&auto=format&fit=crop')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-        />
-      ))}
+        >
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(180deg, transparent 50%, rgba(20,17,13,0.6) 100%)",
+            }}
+          />
+          {/* In-scene title chip */}
+          <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between text-white">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] opacity-70">Now exploring</p>
+              <p className="mt-1 font-serif text-lg italic">Grandma's kitchen, summer '95</p>
+            </div>
+          </div>
+        </div>
+      </BrowserFrame>
+
+      {/* Floating widget — top-left "Voice playing" */}
+      <motion.div
+        className="absolute -left-8 top-12 hidden md:block"
+        style={{ animation: "float 6s ease-in-out infinite" }}
+      >
+        <div className="glass rounded-2xl px-5 py-3.5">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-foreground-muted)]">
+            Voice
+          </p>
+          <p className="mt-1 flex items-center gap-2 font-medium text-[var(--color-foreground)]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]" />
+            </span>
+            Grandma narrating
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Floating widget — top-right "Saved forever" */}
+      <motion.div
+        className="absolute -right-6 top-24 hidden md:block"
+        style={{ animation: "drift 8s ease-in-out infinite", animationDelay: "-2s" }}
+      >
+        <div className="glass-dark rounded-2xl px-5 py-3.5">
+          <p className="text-[10px] uppercase tracking-[0.25em] opacity-60">Saved</p>
+          <p className="mt-1 font-serif text-lg italic">$19 — forever</p>
+        </div>
+      </motion.div>
+
+      {/* Floating widget — bottom-left "Share" */}
+      <motion.div
+        className="absolute -left-4 bottom-12 hidden md:block"
+        style={{ animation: "float 7s ease-in-out infinite", animationDelay: "-3s" }}
+      >
+        <div className="glass rounded-2xl px-5 py-3.5">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-foreground-muted)]">
+            Share
+          </p>
+          <p className="mt-1 font-medium text-[var(--color-foreground)]">livingphotos.app/s/abc</p>
+        </div>
+      </motion.div>
+
+      {/* Floating widget — bottom-right "Step inside" */}
+      <motion.div
+        className="absolute -right-6 bottom-20 hidden md:block"
+        style={{ animation: "drift 9s ease-in-out infinite", animationDelay: "-4s" }}
+      >
+        <div className="glass rounded-full px-5 py-2.5">
+          <p className="font-medium text-[var(--color-foreground)]">Step inside →</p>
+        </div>
+      </motion.div>
     </div>
   );
 }

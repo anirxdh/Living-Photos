@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function Nav() {
   const { scrollY } = useScroll();
-  const bg = useTransform(scrollY, [0, 120], ["rgba(10,10,11,0)", "rgba(10,10,11,0.7)"]);
+  const bg = useTransform(scrollY, [0, 120], ["rgba(247,245,240,0)", "rgba(247,245,240,0.85)"]);
   const borderOpacity = useTransform(scrollY, [0, 120], [0, 1]);
   const blur = useTransform(scrollY, [0, 120], ["blur(0px)", "blur(20px)"]);
 
@@ -24,7 +24,7 @@ export function Nav() {
         className="absolute inset-x-0 bottom-0 h-px bg-[var(--color-border)]"
       />
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link href="/" className="headline text-2xl text-[var(--color-foreground)]">
+        <Link href="/" className="headline text-2xl">
           Living Photos
         </Link>
         <nav className="hidden items-center gap-8 md:flex">

@@ -18,11 +18,11 @@ export function BrowserFrame({
     <div
       className={cn(
         "overflow-hidden rounded-2xl border border-[var(--color-border)]",
-        "bg-[var(--color-surface-elevated)] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.7)]",
+        "bg-[var(--color-surface)] shadow-[0_40px_120px_-30px_rgba(20,17,13,0.25)]",
         className,
       )}
     >
-      <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
+      <div className="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 py-3">
         <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
         <span className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
         <span className="h-3 w-3 rounded-full bg-[#28C840]" />

@@ -10,39 +10,32 @@ export function Emotional() {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.15]);
+  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
 
   return (
-    <section ref={ref} className="relative h-[110vh] w-full overflow-hidden bg-[var(--color-bg)]">
-      <motion.div className="absolute inset-0" style={{ y, scale }}>
+    <section
+      ref={ref}
+      className="relative w-full overflow-hidden bg-[var(--color-bg)] py-40 lg:py-56"
+    >
+      {/* Soft warm tint */}
+      <motion.div className="absolute inset-0 z-0" style={{ y }}>
         <div
-          className="h-full w-full bg-cover bg-center"
+          className="h-full w-full"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1519752594763-2633d8638eef?w=2400&q=85&auto=format&fit=crop')",
+            background:
+              "radial-gradient(ellipse 60% 60% at 50% 50%, rgba(184,132,92,0.10) 0%, transparent 70%)",
           }}
         />
       </motion.div>
 
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(10,10,11,0.7) 0%, rgba(10,10,11,0.4) 40%, rgba(10,10,11,0.4) 60%, rgba(10,10,11,0.85) 100%)",
-        }}
-      />
-
-      <div className="relative z-10 flex h-full items-center justify-center px-6">
-        <Reveal className="max-w-4xl text-center">
-          <p className="headline text-[clamp(36px,5.5vw,72px)] leading-[1.15] text-white">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+        <Reveal>
+          <p className="headline text-[clamp(32px,5vw,64px)] leading-[1.2]">
             “Some places only exist in memory.
             <br />
             <span className="italic text-[var(--color-accent)]">
-              We make them places you can step inside again.
+              We make them places you can step inside again.”
             </span>
-            ”
           </p>
         </Reveal>
       </div>

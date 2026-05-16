@@ -33,15 +33,14 @@ export function LiveProof() {
           {/* Left branch */}
           <MouseParallax
             intensity={18}
-            className="absolute -left-20 top-1/2 z-[1] hidden h-[120%] w-[40vw] max-w-[560px] -translate-y-1/2 md:block"
+            className="absolute -left-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
           >
             <div
               className="h-full w-full bg-cover bg-center"
               style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1400&q=85&auto=format&fit=crop')",
-                maskImage: "linear-gradient(to right, black 60%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 60%, transparent 100%)",
+                backgroundImage: "url('/images/branch-left.jpg')",
+                maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
               }}
             />
           </MouseParallax>
@@ -49,15 +48,14 @@ export function LiveProof() {
           {/* Right branch */}
           <MouseParallax
             intensity={22}
-            className="absolute -right-20 top-1/2 z-[1] hidden h-[120%] w-[40vw] max-w-[560px] -translate-y-1/2 md:block"
+            className="absolute -right-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
           >
             <div
               className="h-full w-full bg-cover bg-center"
               style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1400&q=85&auto=format&fit=crop')",
-                maskImage: "linear-gradient(to left, black 60%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to left, black 60%, transparent 100%)",
+                backgroundImage: "url('/images/branch-right.jpg')",
+                maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
               }}
             />
           </MouseParallax>
@@ -69,8 +67,7 @@ export function LiveProof() {
                 <div
                   className="relative aspect-[4/3] w-full overflow-hidden"
                   style={{
-                    backgroundImage:
-                      "url('https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1600&q=85&auto=format&fit=crop')",
+                    backgroundImage: "url('/images/scene-workshop.jpg')",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}

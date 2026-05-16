@@ -42,16 +42,15 @@ export function Hero() {
       {/* Left rock — drifts a little with mouse */}
       <MouseParallax
         intensity={20}
-        className="absolute left-0 top-0 z-[1] h-full w-[28vw] max-w-[420px]"
+        className="absolute left-0 top-0 z-[1] h-full w-[32vw] max-w-[520px]"
       >
         <div
-          className="h-full w-full bg-cover bg-left-top opacity-95"
+          className="h-full w-full bg-cover opacity-100"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?w=1200&q=85&auto=format&fit=crop')",
+            backgroundImage: "url('/images/hero-rock-left.jpg')",
             backgroundPosition: "right center",
-            maskImage: "linear-gradient(to right, black 65%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to right, black 65%, transparent 100%)",
+            maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
           }}
         />
       </MouseParallax>
@@ -59,16 +58,15 @@ export function Hero() {
       {/* Right rock — slightly different intensity for depth */}
       <MouseParallax
         intensity={24}
-        className="absolute right-0 top-0 z-[1] h-full w-[28vw] max-w-[420px]"
+        className="absolute right-0 top-0 z-[1] h-full w-[32vw] max-w-[520px]"
       >
         <div
-          className="h-full w-full bg-cover bg-right-top opacity-95"
+          className="h-full w-full bg-cover opacity-100"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=1200&q=85&auto=format&fit=crop')",
+            backgroundImage: "url('/images/hero-rock-right.jpg')",
             backgroundPosition: "left center",
-            maskImage: "linear-gradient(to left, black 65%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to left, black 65%, transparent 100%)",
+            maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
           }}
         />
       </MouseParallax>
@@ -147,8 +145,7 @@ function MockupComposition() {
         <div
           className="relative aspect-[16/10] w-full overflow-hidden"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=2000&q=85&auto=format&fit=crop')",
+            backgroundImage: "url('/images/scene-kitchen.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

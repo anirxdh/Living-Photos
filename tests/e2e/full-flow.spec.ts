@@ -5,7 +5,10 @@ test.describe("Full flow (MOCK_MODE)", () => {
     await page.goto("/");
     // Multiple "Bring a memory to life" links exist (nav, hero, pricing, CTA, footer)
     // — .first() picks the nav button, which is deterministic.
-    await page.getByRole("link", { name: /Bring a memory to life/i }).first().click();
+    await page
+      .getByRole("link", { name: /Bring a memory to life/i })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/create$/);
 
     // Fill title

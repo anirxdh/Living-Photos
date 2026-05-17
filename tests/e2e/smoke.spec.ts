@@ -6,9 +6,7 @@ test.describe("Smoke", () => {
     // Hero headline split across two spans; just assert the first half is visible
     await expect(page.getByRole("heading", { name: /Step inside/i })).toBeVisible();
     // Multiple "Bring a memory to life" links exist (nav, hero, pricing, CTA, footer)
-    await expect(
-      page.getByRole("link", { name: /Bring a memory to life/i }).first(),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Bring a memory to life/i }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /My memories/i }).first()).toBeVisible();
   });
 

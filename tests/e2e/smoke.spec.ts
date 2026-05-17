@@ -3,9 +3,13 @@ import { expect, test } from "@playwright/test";
 test.describe("Smoke", () => {
   test("home page renders the hero with CTAs", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("Step inside a memory.")).toBeVisible();
-    await expect(page.getByRole("link", { name: /Bring a memory to life/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /My memories/i })).toBeVisible();
+    // Hero headline split across two spans; just assert the first half is visible
+    await expect(page.getByRole("heading", { name: /Step inside/i })).toBeVisible();
+    // Multiple "Bring a memory to life" links exist (nav, hero, pricing, CTA, footer)
+    await expect(
+      page.getByRole("link", { name: /Bring a memory to life/i }).first(),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /My memories/i }).first()).toBeVisible();
   });
 
   test("/api/health returns ok with mockMode flag", async ({ request }) => {

@@ -3,7 +3,9 @@ import { expect, test } from "@playwright/test";
 test.describe("Full flow (MOCK_MODE)", () => {
   test("user can upload, see generating, unlock, and reach a viewer", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: /Bring a memory to life/i }).click();
+    // Multiple "Bring a memory to life" links exist (nav, hero, pricing, CTA, footer)
+    // — .first() picks the nav button, which is deterministic.
+    await page.getByRole("link", { name: /Bring a memory to life/i }).first().click();
     await expect(page).toHaveURL(/\/create$/);
 
     // Fill title

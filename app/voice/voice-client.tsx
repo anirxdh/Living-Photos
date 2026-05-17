@@ -58,6 +58,17 @@ export default function VoiceClient() {
         voiceClone: { elevenVoiceId: string };
       };
       setVoiceId(voiceClone.elevenVoiceId);
+      // Persist for the /create page to pick up — the photo flow is the next
+      // natural step ("clone voice → create memory"). Survives a tab refresh.
+      try {
+        localStorage.setItem(
+          "livingphotos.voice",
+          JSON.stringify({ id: voiceClone.elevenVoiceId, name, savedAt: Date.now() }),
+        );
+      } catch {
+        // localStorage blocked (private mode etc.) — non-fatal, user just won't
+        // see the voice prefilled on /create. They can re-clone if needed.
+      }
       setStep("done");
     } catch (e) {
       setError(e instanceof Error ? e.message : "submit failed");
@@ -153,8 +164,14 @@ export default function VoiceClient() {
             Voice ID: <code>{voiceId}</code>
           </p>
           <p className="mt-4 text-sm text-muted-foreground">
-            You can now attach this to a scene or write a Memory Letter.
+            We've saved this voice for your next memory.
           </p>
+          <a
+            href="/create"
+            className="mt-5 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background hover:opacity-90"
+          >
+            Create a memory with this voice →
+          </a>
         </div>
       )}
 

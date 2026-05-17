@@ -60,7 +60,11 @@ export default function SceneViewer({ scene }: Props) {
         )}
         <Canvas
           dpr={[1, 2]}
-          frameloop="demand"
+          // 'always' (not 'demand') so Spark.js's splat decoder + render loop
+          // actually gets per-frame invalidations once the .spz is loaded.
+          // With 'demand', nothing triggered a re-render after splat load and
+          // the canvas stayed black.
+          frameloop="always"
           gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
           camera={{ position: [0, 1.5, 3], fov: 50 }}
         >

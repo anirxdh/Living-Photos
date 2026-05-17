@@ -101,8 +101,15 @@ export interface Hunyuan3DInput {
 }
 
 export interface Hunyuan3DResult {
-  /** Textured GLB. */
+  /** Textured GLB — FAL v3 returns this as `model_glb`. We accept both names
+   *  (some older surfaces returned `model_mesh`) so the code is resilient
+   *  if FAL changes again. */
+  model_glb?: FalRemoteFile;
   model_mesh?: FalRemoteFile;
+  /** Convenience map of per-extension URLs (`model_urls.glb`, `model_urls.obj`). */
+  model_urls?: { glb?: FalRemoteFile; obj?: FalRemoteFile };
+  /** Preview thumbnail. */
+  thumbnail?: FalRemoteFile;
   /** Base-color albedo texture if produced. */
   base_color?: FalRemoteFile;
   /** Any auxiliary maps returned (normal, roughness, etc.). */
@@ -123,16 +130,17 @@ export async function submitHunyuan3D(
   return submitFalQueue(HUNYUAN_3D_ENDPOINT, input, apiKey);
 }
 
-/** Convenience: extract the GLB URL + auxiliary file list from a result. */
+/** Convenience: extract the GLB URL + auxiliary file list from a result.
+ *  Reads from the multiple possible shapes (model_glb is the v3 name, but we
+ *  fall through to model_urls.glb and model_mesh for resilience). */
 export function readHunyuan3DResult(result: Hunyuan3DResult): Hunyuan3DOutput {
+  const glb = result.model_glb ?? result.model_urls?.glb ?? result.model_mesh;
   const files: FalRemoteFile[] = [];
-  if (result.model_mesh) files.push(result.model_mesh);
+  if (glb) files.push(glb);
+  if (result.thumbnail) files.push(result.thumbnail);
   if (result.base_color) files.push(result.base_color);
   if (result.textures) files.push(...result.textures);
-  return {
-    glbUrl: result.model_mesh?.url,
-    files,
-  };
+  return { glbUrl: glb?.url, files };
 }
 
 // --- ElevenLabs Sound Effects (via FAL) ------------------------------------

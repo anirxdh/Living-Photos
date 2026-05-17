@@ -19,6 +19,9 @@ export interface CreateSceneInput {
   description?: string;
   userId?: string;
   anonymousEmail?: string;
+  /** Optional ElevenLabs voice ID — pipeline will narrate the scene's description
+   *  in this voice. Created via the /voice flow + handed over to /create. */
+  voiceCloneId?: string;
 }
 
 export function createScene(input: CreateSceneInput): Scene {
@@ -32,6 +35,7 @@ export function createScene(input: CreateSceneInput): Scene {
     description: input.description ?? null,
     userId: input.userId ?? null,
     anonymousEmail: input.anonymousEmail ?? null,
+    voiceCloneId: input.voiceCloneId ?? null,
     status: "pending",
     paid: false,
   });

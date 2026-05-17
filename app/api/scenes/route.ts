@@ -16,6 +16,7 @@ const CreateBody = z.object({
   title: z.string().min(1).max(120).optional(),
   description: z.string().max(2000).optional(),
   anonymousEmail: z.string().email().optional(),
+  voiceCloneId: z.string().min(1).max(120).optional(),
 });
 
 export async function POST(req: Request) {

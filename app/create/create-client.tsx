@@ -2,13 +2,19 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 const ACCEPT = { "image/jpeg": [], "image/png": [], "image/webp": [] };
 const MAX_BYTES = 25 * 1024 * 1024;
+const VOICE_KEY = "livingphotos.voice";
 
 type UploadState = "idle" | "uploading" | "saving" | "error";
+interface SavedVoice {
+  id: string;
+  name: string;
+  savedAt: number;
+}
 
 export default function CreateClient() {
   const router = useRouter();
@@ -18,6 +24,28 @@ export default function CreateClient() {
   const [description, setDescription] = useState("");
   const [state, setState] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [voice, setVoice] = useState<SavedVoice | null>(null);
+
+  // Load a previously-cloned voice from localStorage (set on the /voice page
+  // when the consent flow succeeds). The voice clone is tied to the user's
+  // browser; if it's there, we automatically narrate the scene with it.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(VOICE_KEY);
+      if (raw) setVoice(JSON.parse(raw) as SavedVoice);
+    } catch {
+      // localStorage blocked — fine, just no prefill
+    }
+  }, []);
+
+  function clearVoice() {
+    setVoice(null);
+    try {
+      localStorage.removeItem(VOICE_KEY);
+    } catch {
+      // non-fatal
+    }
+  }
 
   const onDrop = useCallback(
     (accepted: File[]) => {
@@ -75,6 +103,7 @@ export default function CreateClient() {
           sourcePhotoUrl: sourceUrl,
           title: title || "Untitled memory",
           description: description || undefined,
+          voiceCloneId: voice?.id,
         }),
       });
       if (!sceneRes.ok) throw new Error("could not create scene");
@@ -111,6 +140,44 @@ export default function CreateClient() {
           <li>· Very dark, blurry, or low-resolution images</li>
         </ul>
       </div>
+
+      {/* Voice section — either shows the loaded clone or invites the user to
+          create one. Either way, makes the optional voice path discoverable
+          (the gap was that /create and /voice were totally unlinked before). */}
+      {voice ? (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-accent)]/40 bg-[var(--color-accent-glow)] px-5 py-4 text-sm">
+          <div>
+            <p className="font-medium text-[var(--color-foreground)]">
+              Narration on · {voice.name}'s voice
+            </p>
+            <p className="text-xs text-[var(--color-foreground-muted)]">
+              Your scene's description will play in this voice when someone walks through.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={clearVoice}
+            className="rounded-full border border-[var(--color-border)] px-4 py-2 text-xs hover:bg-white/50"
+          >
+            Remove
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-[var(--color-border-strong)] px-5 py-4 text-sm">
+          <div>
+            <p className="font-medium text-[var(--color-foreground)]">Optional: add a voice</p>
+            <p className="text-xs text-[var(--color-foreground-muted)]">
+              Clone a 30-second voice clip so the memory narrates itself.
+            </p>
+          </div>
+          <a
+            href="/voice"
+            className="rounded-full bg-[var(--color-foreground)] px-4 py-2 text-xs text-[var(--color-bg)] hover:opacity-90"
+          >
+            Clone a voice →
+          </a>
+        </div>
+      )}
 
       <div
         {...getRootProps()}

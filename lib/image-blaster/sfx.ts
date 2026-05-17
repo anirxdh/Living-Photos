@@ -32,7 +32,9 @@ export async function generateElevenSfx(args: ElevenSfxArgs): Promise<ArrayBuffe
     },
     body: JSON.stringify({
       text: args.text,
-      duration_seconds: Math.min(Math.max(args.durationSeconds ?? 10, 1), 22),
+      // ElevenLabs direct /sound-generation accepts 0.5–30s. The FAL-proxied
+      // variant in fal.ts is capped at 22s; that's where the old clamp came from.
+      duration_seconds: Math.min(Math.max(args.durationSeconds ?? 10, 0.5), 30),
       prompt_influence: args.promptInfluence ?? 0.5,
     }),
   });
@@ -83,10 +85,9 @@ export interface NarrateArgs {
   voiceId: string;
   text: string;
   /**
-   * Model id. Defaults to `eleven_v3` — released March 2026, most expressive
-   * TTS model in the line. Supports inline audio tags like `[whispers]`,
-   * `[warm]`, `[sighs]` which the caller can embed directly in `text` for
-   * memorial-grade narration.
+   * Model id. Defaults to `eleven_multilingual_v2` — the most-broadly-available
+   * production TTS model. If you have access to a newer model (e.g. `eleven_v3`
+   * once it's GA on your account), pass it via env to override.
    */
   modelId?: string;
   apiKey: string;
@@ -102,7 +103,7 @@ export async function generateNarration(args: NarrateArgs): Promise<ArrayBuffer>
     },
     body: JSON.stringify({
       text: args.text,
-      model_id: args.modelId ?? "eleven_v3",
+      model_id: args.modelId ?? "eleven_multilingual_v2",
       // Slightly higher similarity_boost for memorial use — we want the clone
       // to feel like *them*, not a generic synthesized read.
       voice_settings: { stability: 0.55, similarity_boost: 0.85, style: 0.3 },

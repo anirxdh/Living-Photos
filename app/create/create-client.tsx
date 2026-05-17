@@ -106,7 +106,18 @@ export default function CreateClient() {
           voiceCloneId: voice?.id,
         }),
       });
-      if (!sceneRes.ok) throw new Error("could not create scene");
+      if (!sceneRes.ok) {
+        // 403/404 here typically means the cached voiceCloneId is stale
+        // (revoked, expired, or for a different user). Clear it so the next
+        // submit doesn't hit the same wall.
+        if ((sceneRes.status === 403 || sceneRes.status === 404) && voice) {
+          clearVoice();
+          throw new Error(
+            "Saved voice is no longer valid — cleared. Try again, or clone a new voice.",
+          );
+        }
+        throw new Error("could not create scene");
+      }
       const { scene } = (await sceneRes.json()) as { scene: { id: string; slug: string } };
       router.push(`/scene/${scene.slug}`);
     } catch (e) {

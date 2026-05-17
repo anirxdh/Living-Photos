@@ -146,6 +146,15 @@ export const memVoiceClones = {
   list() {
     return Array.from(store.voiceClones.values());
   },
+  /** Look up by upstream ElevenLabs voice ID. Used by /api/scenes to validate
+   *  that a user-supplied voiceCloneId corresponds to a consented clone before
+   *  letting the pipeline narrate with it. */
+  getByElevenVoiceId(elevenId: string): VoiceClone | null {
+    for (const v of store.voiceClones.values()) {
+      if (v.elevenVoiceId === elevenId) return v;
+    }
+    return null;
+  },
 };
 
 // --- Payments ---------------------------------------------------------------

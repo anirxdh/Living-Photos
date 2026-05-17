@@ -160,9 +160,6 @@ export default function VoiceClient() {
       {step === "done" && voiceId && (
         <div className="rounded-lg border border-green-500/40 bg-green-500/10 p-6 text-center">
           <p className="mb-2 text-lg">Voice cloned.</p>
-          <p className="text-xs text-muted-foreground">
-            Voice ID: <code>{voiceId}</code>
-          </p>
           <p className="mt-4 text-sm text-muted-foreground">
             We've saved this voice for your next memory.
           </p>

@@ -6,6 +6,7 @@
  */
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { memVoiceClones } from "@/lib/db/memory";
 import { inngest } from "@/lib/inngest/client";
 import { createScene, listScenesForOwner, publicScene } from "@/lib/scenes";
 
@@ -28,6 +29,29 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+
+  // If voiceCloneId is supplied, look up the clone record by upstream
+  // ElevenLabs voice id and verify it (a) exists, (b) has gone through the
+  // consent gate, and (c) hasn't been revoked. Without this check, anyone
+  // who knew a voice id could narrate scenes in that voice — the consent
+  // attestation at /api/voice/consent would be a paper guard.
+  //
+  // TODO(auth): when Clerk lands, additionally scope this lookup to the
+  // requester's userId. Today it's single-tenant — knowing another user's
+  // voice id is enough to use it (cross-user voice theft remains possible).
+  if (parsed.data.voiceCloneId) {
+    const clone = memVoiceClones.getByElevenVoiceId(parsed.data.voiceCloneId);
+    if (!clone) {
+      return NextResponse.json({ error: "voice clone not found" }, { status: 404 });
+    }
+    if (!clone.consentVerifiedAt) {
+      return NextResponse.json({ error: "voice clone has no verified consent" }, { status: 403 });
+    }
+    if (clone.revokedAt) {
+      return NextResponse.json({ error: "voice clone has been revoked" }, { status: 403 });
+    }
+  }
+
   const scene = createScene(parsed.data);
   await inngest.send({
     name: "scene/uploaded",

@@ -17,11 +17,12 @@ describe("/api/blob/upload", () => {
   });
 
   it("PUT stores bytes in mock blob", async () => {
+    const body = "hello";
     const res = await PUT(
       new Request("http://test/api/blob/upload?pathname=uploads/b.jpg", {
         method: "PUT",
-        body: "hello",
-        headers: { "content-type": "image/jpeg" },
+        body,
+        headers: { "content-type": "image/jpeg", "content-length": String(body.length) },
       }),
     );
     const j = (await res.json()) as { url: string };
@@ -29,7 +30,46 @@ describe("/api/blob/upload", () => {
   });
 
   it("PUT 400 without pathname", async () => {
-    const res = await PUT(new Request("http://test/api/blob/upload", { method: "PUT", body: "x" }));
+    const res = await PUT(
+      new Request("http://test/api/blob/upload", {
+        method: "PUT",
+        body: "x",
+        headers: { "content-type": "image/jpeg", "content-length": "1" },
+      }),
+    );
     expect(res.status).toBe(400);
+  });
+
+  it("PUT 400 rejects disallowed pathname prefix", async () => {
+    const res = await PUT(
+      new Request("http://test/api/blob/upload?pathname=phish/login.html", {
+        method: "PUT",
+        body: "x",
+        headers: { "content-type": "image/jpeg", "content-length": "1" },
+      }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("PUT 400 rejects disallowed content-type", async () => {
+    const res = await PUT(
+      new Request("http://test/api/blob/upload?pathname=uploads/x.html", {
+        method: "PUT",
+        body: "<html></html>",
+        headers: { "content-type": "text/html", "content-length": "13" },
+      }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("PUT 411 when content-length is missing", async () => {
+    const res = await PUT(
+      new Request("http://test/api/blob/upload?pathname=uploads/y.jpg", {
+        method: "PUT",
+        body: "x",
+        headers: { "content-type": "image/jpeg" },
+      }),
+    );
+    expect(res.status).toBe(411);
   });
 });

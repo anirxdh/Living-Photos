@@ -29,8 +29,34 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     }
     rafId = requestAnimationFrame(raf);
 
+    // Hand anchor-link clicks (e.g. <a href="#how-it-works">) to Lenis so they
+    // scroll with the same buttery easing as the wheel. Without this, Next.js's
+    // <Link> + the browser do an instant jump and fight with Lenis's transform.
+    function handleAnchorClick(e: MouseEvent) {
+      // Respect modifier keys (cmd-click to open in new tab, etc.) but DON'T
+      // bail on defaultPrevented — Next.js's <Link> calls preventDefault before
+      // this listener fires, so guarding on it would skip every hash link.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest("a") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href?.startsWith("#") || href === "#") return;
+      const el = document.querySelector(href);
+      if (!el) return;
+      e.preventDefault();
+      lenis.scrollTo(el as HTMLElement, {
+        offset: -80, // leave room for the fixed nav
+        duration: 1.4,
+        easing: (t) => 1 - (1 - t) ** 3, // easeOutCubic — settles softly
+      });
+      history.pushState(null, "", href);
+    }
+    document.addEventListener("click", handleAnchorClick);
+
     return () => {
       cancelAnimationFrame(rafId);
+      document.removeEventListener("click", handleAnchorClick);
       lenis.destroy();
     };
   }, []);

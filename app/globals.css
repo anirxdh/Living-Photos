@@ -208,3 +208,20 @@ body::before {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(8px, -12px); }
 }
+
+/* Cherry blossom petal — outer span falls top→bottom, inner span sways */
+@keyframes petal-fall {
+  from { transform: translateY(-10vh); }
+  to { transform: translateY(115vh); }
+}
+
+@keyframes petal-sway {
+  from { transform: translateX(-22px) rotate(-18deg); }
+  to { transform: translateX(22px) rotate(18deg); }
+}
+
+/* Ken Burns — very slow zoom + pan on hero image for "alive" feel */
+@keyframes ken-burns {
+  0% { transform: scale(1.02) translate(0%, 0%); }
+  100% { transform: scale(1.07) translate(-1%, -1%); }
+}

@@ -9,13 +9,25 @@ import { motion, type Variants } from "framer-motion";
  * `delay` prop for staggered effects.
  */
 
+// y: 8 instead of 24 — shorter slide = less time at sub-pixel positions = less
+// anti-aliasing blur during the animation. The slide-up is still perceptible
+// but content lands on integer pixel boundaries quickly.
 const variants: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
   },
+};
+
+// GPU compositing hints — force the element onto its own layer so text and
+// image edges stay crisp throughout the transform animation instead of
+// blurring while mid-translate.
+const gpuStyle = {
+  backfaceVisibility: "hidden" as const,
+  WebkitFontSmoothing: "antialiased" as const,
+  transform: "translateZ(0)",
 };
 
 interface RevealProps {
@@ -30,11 +42,12 @@ export function Reveal({ children, delay = 0, className, as = "div" }: RevealPro
   return (
     <Comp
       className={className}
+      style={gpuStyle}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
       variants={variants}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
     </Comp>

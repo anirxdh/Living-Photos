@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Reveal, RevealGroup, revealItem } from "@/components/motion/reveal";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Headline } from "@/components/ui/headline";
 
 interface Step {
@@ -18,21 +17,21 @@ const STEPS: Step[] = [
     n: "[ 1 ]",
     title: "Total memory recall",
     body: "Drop one interior photo — kitchen, porch, bedroom. Old film prints work best. Any phone or laptop can upload.",
-    bg: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1400&q=85&auto=format&fit=crop",
+    bg: "/images/scene-kitchen.jpg",
     accentTint: "rgba(184, 132, 92, 0.18)",
   },
   {
     n: "[ 2 ]",
     title: "Precise 3D reconstruction",
     body: "World Labs rebuilds the entire room. FAL Hunyuan3D adds objects you can walk around. Five minutes, end to end.",
-    bg: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1400&q=85&auto=format&fit=crop",
+    bg: "/images/scene-workshop.jpg",
     accentTint: "rgba(74, 122, 90, 0.18)",
   },
   {
     n: "[ 3 ]",
     title: "Voice that lives there",
     body: "Upload 30 seconds of a loved one's voice. ElevenLabs clones it. They narrate softly from inside the room.",
-    bg: "https://images.unsplash.com/photo-1519752594763-2633d8638eef?w=1400&q=85&auto=format&fit=crop",
+    bg: "/images/hero-rock-right.jpg",
     accentTint: "rgba(184, 132, 92, 0.18)",
   },
 ];

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CursorReveal } from "@/components/motion/cursor-reveal";
 import { MouseParallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
 import { Tilt3D } from "@/components/motion/tilt-3d";
@@ -31,33 +32,69 @@ export function LiveProof() {
 
         {/* Layered composition */}
         <div className="relative">
-          {/* Left branch */}
+          {/* Left branch — autumn by default; cursor reveals a cherry-blossom
+              version of the same branch in a soft halo (seasons bloom under your hand) */}
           <MouseParallax
             intensity={18}
             className="absolute -left-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
           >
-            <div
-              className="h-full w-full bg-cover bg-center"
-              style={{
-                backgroundImage: "url('/images/branch-left.jpg')",
-                maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-              }}
+            <CursorReveal
+              radius={300}
+              className="h-full w-full"
+              base={
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: "url('/images/branch-left.jpg')",
+                    maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                    WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                  }}
+                />
+              }
+              reveal={
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: "url('/images/branch-left.jpg')",
+                    maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                    WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                    /* "Cherry blossom" treatment — swap for a real spring image when ready */
+                    filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
+                  }}
+                />
+              }
             />
           </MouseParallax>
 
-          {/* Right branch */}
+          {/* Right branch — same seasonal swap, mirrored */}
           <MouseParallax
             intensity={22}
             className="absolute -right-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
           >
-            <div
-              className="h-full w-full bg-cover bg-center"
-              style={{
-                backgroundImage: "url('/images/branch-right.jpg')",
-                maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-              }}
+            <CursorReveal
+              radius={300}
+              className="h-full w-full"
+              base={
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: "url('/images/branch-right.jpg')",
+                    maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                    WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                  }}
+                />
+              }
+              reveal={
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: "url('/images/branch-right.jpg')",
+                    maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                    WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                    filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
+                  }}
+                />
+              }
             />
           </MouseParallax>
 

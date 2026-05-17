@@ -15,7 +15,7 @@ Living Photos turns an interior photograph into a walkable 3D Gaussian-splat sce
 - per-object 3D meshes from **FAL Hunyuan3D**
 - ambient sound from **ElevenLabs SFX**
 - an optional cloned voice narration from **ElevenLabs Instant Voice Cloning**
-- one-time **$19 Stripe Checkout** to unlock the scene forever
+- one-time **$15 Stripe Checkout** to unlock the scene forever (price set in [`lib/pricing.ts`](./lib/pricing.ts) — override via `NEXT_PUBLIC_PRICE_CENTS`)
 - a public share URL (`/s/<slug>`) with custom OG preview
 
 Built as a Next.js 15 + Three.js + Inngest + Stripe app that orchestrates World Labs Marble (3D environment), FAL Hunyuan3D (3D meshes), and the ElevenLabs API (voice clone + ambient SFX + narration) end-to-end.
@@ -27,14 +27,15 @@ Built as a Next.js 15 + Three.js + Inngest + Stripe app that orchestrates World 
 **No API keys required.** With `MOCK_MODE=true` (the default), the entire end-to-end pipeline runs deterministically against in-memory mock adapters in under 5 seconds. Same exact interface as the real adapters — flip one env var to swap.
 
 ```bash
-pnpm install
-pnpm dev               # runs at http://localhost:3000
-pnpm test              # 122 unit + contract tests in <2s
-pnpm test:e2e          # Playwright across Chromium + WebKit mobile (8 specs)
-pnpm seed              # in another shell — seeds 3 demo scenes
+pnpm install                # installs deps + auto-installs pre-push git hook
+pnpm fixtures:download      # downloads the demo .spz + .glb (~29 MB, one-time, not committed to git)
+pnpm dev                    # runs at http://localhost:3000
+pnpm test                   # 122 unit + contract tests in <2s
+pnpm test:e2e               # Playwright across Chromium + WebKit mobile (8 specs)
+pnpm seed                   # in another shell — seeds 3 demo scenes
 ```
 
-To swap to real APIs, fill out `.env.local` with your keys and set `MOCK_MODE=false`. See [`docs/SWAP_TO_REAL.md`](./docs/SWAP_TO_REAL.md).
+To go to production, see [`DEPLOY.md`](./DEPLOY.md) — full step-by-step procedure (services to sign up for, env vars to set, Stripe activation, Vercel Fluid Compute, custom domain). To swap to real APIs locally, see [`docs/SWAP_TO_REAL.md`](./docs/SWAP_TO_REAL.md).
 
 ---
 

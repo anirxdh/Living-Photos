@@ -20,7 +20,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "seed": "tsx scripts/seed-demo.ts"
+    "seed": "tsx scripts/seed-demo.ts",
+    "fixtures:download": "tsx scripts/download-fixtures.ts",
+    "prepare": "node -e \"const fs=require('fs');try{fs.copyFileSync('scripts/hooks/pre-push','.git/hooks/pre-push');fs.chmodSync('.git/hooks/pre-push',0o755);console.log('git hook: pre-push installed');}catch(e){}\""
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

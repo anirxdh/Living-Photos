@@ -98,17 +98,13 @@ export default function CreateClient() {
           reconstruct well and trigger privacy concerns. Set expectations up
           front so the user doesn't burn $3+ on a photo that won't work. */}
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]/60 px-5 py-4 text-sm">
-        <p className="font-medium text-[var(--color-foreground)]">
-          What works best
-        </p>
+        <p className="font-medium text-[var(--color-foreground)]">What works best</p>
         <ul className="mt-2 space-y-1 text-[var(--color-foreground-secondary)]">
           <li>· Interior rooms — kitchens, bedrooms, workshops, porches</li>
           <li>· Well-lit, shot roughly straight-on (not from a low angle)</li>
           <li>· Clear depth (objects at different distances, not a flat wall)</li>
         </ul>
-        <p className="mt-3 font-medium text-[var(--color-foreground)]">
-          What to avoid
-        </p>
+        <p className="mt-3 font-medium text-[var(--color-foreground)]">What to avoid</p>
         <ul className="mt-2 space-y-1 text-[var(--color-foreground-secondary)]">
           <li>· People or faces — please don't upload photos of identifiable humans</li>
           <li>· Outdoor scenes, abstract art, or single objects on a blank background</li>

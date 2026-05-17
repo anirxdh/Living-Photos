@@ -38,16 +38,8 @@ export default function SceneViewer({ scene }: Props) {
 
   // Mobile devices get the low-poly splat tier to avoid Safari WebGL crashes
   // on heavy worlds. Falls back to full-res on desktop.
-  const rawSplatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
-  // In MOCK_MODE the pipeline returns /fixtures/* stubs (placeholder text files).
-  // Skip loading them — the loaders would throw "invalid gzip" / "invalid JSON"
-  // and Next.js's dev error overlay surfaces those even when an ErrorBoundary
-  // catches the React-side throw. Filtering at the source keeps the page clean.
-  const isPlaceholder = (url: string) => url.startsWith("/fixtures/");
-  const splatUrl = rawSplatUrl && !isPlaceholder(rawSplatUrl) ? rawSplatUrl : null;
-  const meshUrls = (scene.meshes ?? []).filter(
-    (m) => m.url.toLowerCase().endsWith(".glb") && !isPlaceholder(m.url),
-  );
+  const splatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
+  const meshUrls = (scene.meshes ?? []).filter((m) => m.url.toLowerCase().endsWith(".glb"));
   const isDemoMode = !splatUrl && meshUrls.length === 0;
 
   return (

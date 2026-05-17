@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Pre-push gate: run typecheck + lint + unit tests before allowing a push.
+#
+# We hit this twice in a row: lint format errors and a stale e2e test slipped
+# through to GitHub and broke CI. This hook catches them locally so you don't
+# waste a CI cycle.
+#
+# - typecheck: catches type errors (tsc --noEmit)
+# - lint:      catches biome format/lint violations (biome check .)
+# - test:      catches broken unit + contract tests (vitest run)
+#
+# Skipped: pnpm test:e2e (slow, requires booting a server; CI handles it).
+#
+# To bypass in an emergency: git push --no-verify
+
+set -e
+
+echo "→ pre-push: typecheck + lint + unit tests"
+echo ""
+
+pnpm typecheck
+pnpm lint
+pnpm test
+
+echo ""
+echo "✓ pre-push checks passed"

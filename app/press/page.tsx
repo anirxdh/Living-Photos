@@ -12,13 +12,13 @@ const STACK = [
   ["FAL Hunyuan3D", "Per-object 3D meshes with PBR textures"],
   ["ElevenLabs Sound Effects", "Ambient room audio"],
   ["ElevenLabs Instant Voice Cloning", "Clone a voice from a 30-second sample"],
-  ["Stripe Checkout + Billing", "$19 one-time + usage-billed future tiers"],
+  ["Stripe Checkout + Billing", "$15 one-time + usage-billed future tiers"],
   ["Three.js + React Three Fiber + Spark.js", "Splat rendering, walkable controls, mobile WebGL2"],
   ["Inngest", "Orchestrates the 5-minute background pipeline"],
 ];
 
 const PRICING = [
-  ["Single memory", "$19 one-time"],
+  ["Single memory", "$15 one-time"],
   ["Family unlimited", "$49 / year (V1.5)"],
   ["Lifetime archive", "$299 one-time (V1.5)"],
 ];
@@ -37,7 +37,7 @@ export default function PressPage() {
           <Section title="One-liner">
             <p>
               Turn one photograph into a walkable 3D scene with the voice of someone you loved
-              playing softly inside. Preserved forever for $19.
+              playing softly inside. Preserved forever for $15.
             </p>
           </Section>
 

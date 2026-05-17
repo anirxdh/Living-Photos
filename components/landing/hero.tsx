@@ -21,7 +21,6 @@ export function Hero() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
 
   return (
@@ -59,53 +58,51 @@ export function Hero() {
         <PetalRain count={32} />
       </div>
 
-      {/* Foreground content — left-anchored so the headline doesn't overlap the tree */}
-      <motion.div
-        className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-start px-6 text-left md:px-12 lg:px-20"
-        style={{ opacity }}
-      >
-        <motion.p
-          className="eyebrow"
-          style={{ color: "rgba(255,255,255,0.85)" }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      {/* Foreground content — left-anchored so the headline doesn't overlap the tree.
+          Plain div (not motion.div) — a MotionValue in style here was suppressing
+          child framer animations, leaving the headline stuck at opacity:0. The
+          section is h-screen so it scrolls off-viewport on its own; no fade needed. */}
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-start px-6 text-left md:px-12 lg:px-20">
+        {/* Hero text rendered without framer initial-opacity: a MotionValue on
+            the parent (style={{ opacity }} from useTransform) was preventing
+            children's initial→animate transitions from progressing, leaving
+            text stuck at opacity:0. CSS animation handles fade-in instead. */}
+        <p
+          className="eyebrow hero-fade-in"
+          style={{ color: "rgba(255,255,255,0.85)", animationDelay: "0.3s" }}
         >
           Memory reimagined
-        </motion.p>
+        </p>
 
-        <motion.h1
-          className="headline mt-6 max-w-4xl text-[clamp(40px,6.5vw,92px)] leading-[1.02]"
-          style={{ color: "#ffffff", textShadow: "0 2px 28px rgba(0,0,0,0.55)" }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        <h1
+          className="headline mt-6 max-w-4xl text-[clamp(40px,6.5vw,92px)] leading-[1.02] hero-fade-in"
+          style={{
+            color: "#ffffff",
+            textShadow: "0 2px 28px rgba(0,0,0,0.55)",
+            animationDelay: "0.5s",
+          }}
         >
           <span className="block" style={{ opacity: 0.92 }}>
             Step inside
           </span>
           <span className="block italic">a memory you can walk through.</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          className="mt-8 max-w-xl text-balance text-base md:text-lg"
+        <p
+          className="mt-8 max-w-xl text-balance text-base md:text-lg hero-fade-in"
           style={{
             color: "rgba(255,255,255,0.9)",
             textShadow: "0 1px 14px rgba(0,0,0,0.55)",
+            animationDelay: "0.85s",
           }}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
         >
           Upload one photograph. Walk into it in 3D. Hear the voice of someone you loved play softly
           from inside the room.
-        </motion.p>
+        </p>
 
-        <motion.div
-          className="mt-8 flex flex-wrap items-center gap-3"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
+        <div
+          className="mt-8 flex flex-wrap items-center gap-3 hero-fade-in"
+          style={{ animationDelay: "1.05s" }}
         >
           <Magnetic radius={140} strength={0.4}>
             <Button href="/create" size="lg" variant="primary">
@@ -117,8 +114,8 @@ export function Hero() {
               See how it works
             </Button>
           </Magnetic>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

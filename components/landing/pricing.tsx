@@ -32,7 +32,7 @@ export function Pricing() {
               <div>
                 <p className="eyebrow">Single memory</p>
                 <p className="mt-3 flex items-baseline gap-2">
-                  <span className="headline text-7xl">$19</span>
+                  <span className="headline text-7xl">$15</span>
                   <span className="text-sm text-[var(--color-foreground-muted)]">
                     once · no subscription
                   </span>

@@ -25,7 +25,7 @@ export function CTA() {
         </Reveal>
         <Reveal delay={0.15}>
           <p className="mx-auto mt-8 max-w-xl text-[var(--color-foreground-secondary)]">
-            One photo. Five minutes. $19. Yours forever.
+            One photo. Five minutes. $15. Yours forever.
           </p>
         </Reveal>
         <Reveal delay={0.3}>

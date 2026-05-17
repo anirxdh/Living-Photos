@@ -225,3 +225,17 @@ body::before {
   0% { transform: scale(1.02) translate(0%, 0%); }
   100% { transform: scale(1.07) translate(-1%, -1%); }
 }
+
+/* Hero text entrance — CSS-driven so it can't be suppressed by framer-motion
+   parent state. Each element sets its own animation-delay inline. */
+@keyframes hero-fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-fade-in {
+  opacity: 0;
+  animation: hero-fade-in-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade-in { animation: none; opacity: 1; }
+}

@@ -12,7 +12,7 @@ import { env } from "@/lib/env";
 import { getScene, markScenePaid } from "@/lib/scenes";
 import { newId } from "@/lib/utils";
 
-export const PRICE_CENTS = 1900;
+export const PRICE_CENTS = 1500;
 
 interface CheckoutArgs {
   sceneId: string;

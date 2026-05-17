@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       object: {
         id: parsed.data.sessionId,
         metadata: { sceneId: parsed.data.sceneId },
-        amount_total: 1900,
+        amount_total: 1500,
         currency: "usd",
       },
     },

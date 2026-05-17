@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LIBRARY_VOICES } from "@/lib/voice/library";
 
 type Step = "name" | "consent" | "sample" | "submitting" | "done" | "error";
 
@@ -76,10 +77,61 @@ export default function VoiceClient() {
     }
   }
 
+  function pickLibraryVoice(elevenId: string) {
+    const v = LIBRARY_VOICES.find((x) => x.elevenVoiceId === elevenId);
+    if (!v) return;
+    try {
+      localStorage.setItem(
+        "livingphotos.voice",
+        JSON.stringify({ id: v.elevenVoiceId, name: v.name, savedAt: Date.now() }),
+      );
+    } catch {
+      // localStorage blocked — non-fatal; banner just won't prefill on /create
+    }
+    window.location.href = "/create";
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Quick-start picker. Skips the entire record + consent flow for users
+          who just want to try the product with a realistic-sounding voice.
+          Library voices are pre-seeded into memVoiceClones with consent
+          verified so they pass the /api/scenes gate. */}
+      {step === "name" && (
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
+          <p className="text-sm font-medium">Quick start — pick a library voice</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Skip recording. Use one of {LIBRARY_VOICES.length} professional voices from the
+            ElevenLabs library. Great for trying the product first.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <select
+              defaultValue=""
+              onChange={(e) => {
+                if (e.target.value) pickLibraryVoice(e.target.value);
+              }}
+              className="flex-1 rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-foreground"
+              data-testid="library-voice-select"
+            >
+              <option value="" disabled>
+                Choose a voice…
+              </option>
+              {LIBRARY_VOICES.map((v) => (
+                <option key={v.id} value={v.elevenVoiceId}>
+                  {v.name} — {v.description}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Or scroll down to clone a real voice (your own or a family member's, with consent).
+          </p>
+        </div>
+      )}
+
       {step === "name" && (
         <div className="space-y-4">
+          <p className="text-sm font-medium">Or clone a real voice</p>
           <label className="block">
             <span className="mb-1 block text-sm text-muted-foreground">Whose voice is this?</span>
             <input

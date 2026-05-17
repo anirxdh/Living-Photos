@@ -3,6 +3,7 @@
  * actually use (CRUD on scenes / voice clones / payments / processed events).
  * Reset between Vitest runs by importing `resetMemoryStore()`.
  */
+import { LIBRARY_VOICES } from "@/lib/voice/library";
 import type { NewScene, Payment, ProcessedWebhookEvent, Scene, User, VoiceClone } from "./schema";
 
 interface Report {
@@ -42,6 +43,30 @@ if (!_globals.__livingPhotosStore) {
     users: new Map(),
     reportRate: new Map(),
   };
+  // Seed the public ElevenLabs library voices as pre-consented clones so
+  // users picking from the "Quick start" dropdown can narrate scenes without
+  // recording themselves. Marked consentVerifiedAt so /api/scenes consent
+  // gate accepts them just like user-cloned voices. The consent-artifact
+  // placeholders document that the consent for a public library voice comes
+  // from ElevenLabs's own voice-library terms, not a user attestation.
+  const seededAt = new Date(0); // sentinel — distinguishes library from user clones
+  for (const v of LIBRARY_VOICES) {
+    _globals.__livingPhotosStore.voiceClones.set(v.id, {
+      id: v.id,
+      userId: null,
+      sceneId: null,
+      elevenVoiceId: v.elevenVoiceId,
+      name: v.name,
+      consentArtifactUrl: "library://elevenlabs/voice-library-terms",
+      consentTranscript: `Public ElevenLabs library voice: ${v.name}. Consent governed by ElevenLabs Voice Library terms.`,
+      consentNonce: "LIBRARY",
+      consentVerifiedAt: seededAt,
+      isSelfVoice: false,
+      regenerationCount: 0,
+      revokedAt: null,
+      createdAt: seededAt,
+    });
+  }
 }
 const store: Store = _globals.__livingPhotosStore;
 

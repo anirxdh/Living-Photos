@@ -49,12 +49,19 @@ function build(): Adapters {
           "Set MOCK_MODE=false and provide real API keys before deploying.",
       );
     }
+    // STRIPE_FORCE_REAL lets the developer test real Stripe Checkout (with
+    // test-mode keys) while keeping the expensive World Labs / FAL / ElevenLabs
+    // calls mocked. Production safety: NODE_ENV check above already prevents
+    // MOCK_MODE in prod, so this only ever runs in dev/test.
+    const stripeAdapter = env.STRIPE_FORCE_REAL
+      ? new RealStripeAdapter(env.STRIPE_SECRET_KEY, env.STRIPE_WEBHOOK_SECRET)
+      : new MockStripeAdapter();
     return {
       marble: new MockMarbleAdapter(),
       mesh: new MockMeshAdapter(),
       sfx: new MockSfxAdapter(),
       voice: new MockVoiceAdapter(),
-      stripe: new MockStripeAdapter(),
+      stripe: stripeAdapter,
       blob: new MockBlobAdapter(),
       avatar: new MockAvatarAdapter(),
     };

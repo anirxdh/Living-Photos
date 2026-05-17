@@ -22,6 +22,12 @@ export async function POST(req: Request) {
   if (!env.MOCK_MODE || env.NODE_ENV === "production") {
     return NextResponse.json({ error: "mock-mode only" }, { status: 400 });
   }
+  // When real Stripe is force-enabled inside MOCK_MODE (STRIPE_FORCE_REAL=true),
+  // the success-page fetch is redundant — the live Stripe webhook already does
+  // the fulfillment. Skip silently with 200 so the client doesn't log a 500.
+  if (env.STRIPE_FORCE_REAL) {
+    return NextResponse.json({ skipped: true, reason: "real Stripe webhook fulfills" });
+  }
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid input" }, { status: 400 });
 

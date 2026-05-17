@@ -3,7 +3,7 @@
  * actually use (CRUD on scenes / voice clones / payments / processed events).
  * Reset between Vitest runs by importing `resetMemoryStore()`.
  */
-import type { NewScene, Payment, ProcessedWebhookEvent, Scene, VoiceClone } from "./schema";
+import type { NewScene, Payment, ProcessedWebhookEvent, Scene, User, VoiceClone } from "./schema";
 
 interface Report {
   id: string;
@@ -19,6 +19,7 @@ interface Store {
   payments: Map<string, Payment>;
   processed: Map<string, ProcessedWebhookEvent>; // key = `${provider}:${event_id}`
   reports: Map<string, Report>;
+  users: Map<string, User>; // key = email (normalized lowercase)
   /** Cheap per-IP rate-limit window for the abuse-report endpoint. */
   reportRate: Map<string, number[]>;
 }
@@ -38,6 +39,7 @@ if (!_globals.__livingPhotosStore) {
     payments: new Map(),
     processed: new Map(),
     reports: new Map(),
+    users: new Map(),
     reportRate: new Map(),
   };
 }
@@ -49,6 +51,7 @@ export function resetMemoryStore() {
   store.payments.clear();
   store.processed.clear();
   store.reports.clear();
+  store.users.clear();
   store.reportRate.clear();
 }
 

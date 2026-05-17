@@ -19,13 +19,14 @@ export class MockBlobAdapter implements BlobAdapter {
    * returns a Vercel Blob signed URL the client PUTs to directly.)
    */
   async createSignedUploadUrl(input: { pathname: string; contentType: string }) {
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    // Always return a relative URL so the browser PUTs to whatever origin it
+    // loaded the page from. Using NEXT_PUBLIC_APP_URL here breaks when the
+    // dev server runs on a port other than the one configured (e.g. 3001 vs
+    // 3000), because the browser tries to reach the configured port and fails
+    // with "Failed to fetch".
     const qs = `?pathname=${encodeURIComponent(input.pathname)}&contentType=${encodeURIComponent(input.contentType)}`;
-    // Use a relative URL when called server-side (env unset) so the browser
-    // resolves against its current origin.
-    const url = `${base}/api/blob/upload${qs}`;
     return {
-      url,
+      url: `/api/blob/upload${qs}`,
       publicUrl: `https://mock.blob.local/${input.pathname}`,
     };
   }

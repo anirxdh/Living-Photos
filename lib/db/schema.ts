@@ -31,6 +31,10 @@ export const sceneStatusEnum = pgEnum("scene_status", [
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull(),
+  // Persisted across purchases so the SECOND checkout reuses the same Stripe
+  // Customer, surfacing saved payment methods ("Pay with •••• 4242") instead
+  // of forcing the user to re-enter their card every time.
+  stripeCustomerId: text("stripe_customer_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -128,3 +132,4 @@ export type NewScene = typeof scenes.$inferInsert;
 export type VoiceClone = typeof voiceClones.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type ProcessedWebhookEvent = typeof processedWebhookEvents.$inferSelect;
+export type User = typeof users.$inferSelect;

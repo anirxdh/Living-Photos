@@ -15,6 +15,16 @@ const schema = z
       .optional()
       .transform((v) => v?.toLowerCase() === "true"),
 
+    /**
+     * Force the real Stripe adapter even when MOCK_MODE=true. Lets you test
+     * real Stripe Checkout (test-mode keys) while keeping the expensive 3D/
+     * voice generation mocked. Honored only outside production for safety.
+     */
+    STRIPE_FORCE_REAL: z
+      .string()
+      .optional()
+      .transform((v) => v?.toLowerCase() === "true"),
+
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
 

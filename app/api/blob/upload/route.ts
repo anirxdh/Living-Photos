@@ -9,7 +9,6 @@
  */
 import { NextResponse } from "next/server";
 import { adapters } from "@/lib/ai/factory";
-import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -23,13 +22,8 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  // Mock path: stash bytes in the in-memory adapter.
-  if (!env.MOCK_MODE) {
-    return NextResponse.json(
-      { error: "PUT to /api/blob/upload is mock-mode only" },
-      { status: 400 },
-    );
-  }
+  // Both mock and real adapters implement put() — mock stashes in-memory,
+  // real uploads to Vercel Blob via the @vercel/blob SDK. Same code path.
   const url = new URL(req.url);
   const pathname = url.searchParams.get("pathname");
   if (!pathname) return NextResponse.json({ error: "pathname required" }, { status: 400 });

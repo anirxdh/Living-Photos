@@ -67,10 +67,18 @@ export class MockAvatarAdapter implements AvatarAdapter {
 
 export class RealAvatarAdapter implements AvatarAdapter {
   constructor(private apiKey: string) {
-    if (!apiKey) throw new Error("RealAvatarAdapter: HEDRA_API_KEY missing");
+    // Lazy: don't throw in the constructor. Avatar generation (Hedra) is an
+    // optional step — most scenes don't need it. Throwing here blocks all
+    // other adapters from being instantiated when HEDRA_API_KEY isn't set.
+    // We throw at the first actual call instead.
+  }
+
+  private assertKey() {
+    if (!this.apiKey) throw new Error("RealAvatarAdapter: HEDRA_API_KEY missing");
   }
 
   async submit(input: AvatarSubmitInput): Promise<{ jobId: string }> {
+    this.assertKey();
     const res = await fetch("https://api.hedra.com/v1/character-3/generate", {
       method: "POST",
       headers: { "x-api-key": this.apiKey, "content-type": "application/json" },
@@ -86,6 +94,7 @@ export class RealAvatarAdapter implements AvatarAdapter {
   }
 
   async poll(jobId: string): Promise<AvatarResult> {
+    this.assertKey();
     const res = await fetch(`https://api.hedra.com/v1/character-3/jobs/${jobId}`, {
       headers: { "x-api-key": this.apiKey },
     });

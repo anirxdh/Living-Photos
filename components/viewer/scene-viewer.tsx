@@ -2,7 +2,7 @@
 
 import { CameraControls, Environment, Html, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useState } from "react";
+import { Component, type ReactNode, Suspense, useEffect, useState } from "react";
 import type { Scene } from "@/lib/db/schema";
 import { SplatRenderer } from "./splat-renderer";
 
@@ -38,12 +38,34 @@ export default function SceneViewer({ scene }: Props) {
 
   // Mobile devices get the low-poly splat tier to avoid Safari WebGL crashes
   // on heavy worlds. Falls back to full-res on desktop.
-  const splatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
-  const meshUrls = (scene.meshes ?? []).filter((m) => m.url.toLowerCase().endsWith(".glb"));
+  const rawSplatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
+  // In MOCK_MODE the pipeline returns /fixtures/* stubs (placeholder text files).
+  // Skip loading them — the loaders would throw "invalid gzip" / "invalid JSON"
+  // and Next.js's dev error overlay surfaces those even when an ErrorBoundary
+  // catches the React-side throw. Filtering at the source keeps the page clean.
+  const isPlaceholder = (url: string) => url.startsWith("/fixtures/");
+  const splatUrl = rawSplatUrl && !isPlaceholder(rawSplatUrl) ? rawSplatUrl : null;
+  const meshUrls = (scene.meshes ?? []).filter(
+    (m) => m.url.toLowerCase().endsWith(".glb") && !isPlaceholder(m.url),
+  );
+  const isDemoMode = !splatUrl && meshUrls.length === 0;
 
   return (
     <div className="relative">
-      <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-black">
+      <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-black">
+        {isDemoMode && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <div className="max-w-md px-8 text-center text-white/80">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-white/50">Demo mode</p>
+              <p className="mt-3 font-serif text-2xl italic">
+                Your memory would walk through here.
+              </p>
+              <p className="mt-3 text-sm text-white/60">
+                Real 3D scenes generate when MOCK_MODE is off and World Labs + FAL keys are live.
+              </p>
+            </div>
+          </div>
+        )}
         <Canvas
           dpr={[1, 2]}
           frameloop="demand"
@@ -53,11 +75,16 @@ export default function SceneViewer({ scene }: Props) {
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <Suspense fallback={<LoadingHtml />}>
-            {splatUrl && splatUrl.toLowerCase().endsWith(".spz") && (
-              <SplatRenderer url={splatUrl} />
+            {splatUrl?.toLowerCase().endsWith(".spz") && (
+              <SafeAsset>
+                <SplatRenderer url={splatUrl} />
+              </SafeAsset>
             )}
-            {meshUrls.map((m) => (
-              <SceneMesh key={m.url} url={m.url} />
+            {meshUrls.map((m, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: mock meshes share /fixtures/object.glb; index disambiguates duplicates
+              <SafeAsset key={`${m.url}#${i}`}>
+                <SceneMesh url={m.url} />
+              </SafeAsset>
             ))}
           </Suspense>
           <Environment preset="apartment" />
@@ -95,4 +122,25 @@ function LoadingHtml() {
 function SceneMesh({ url }: { url: string }) {
   const { scene } = useGLTF(url);
   return <primitive object={scene} />;
+}
+
+/**
+ * Catches loader errors (invalid GLB/SPZ, network failures, malformed binary)
+ * and renders nothing instead of crashing the whole Canvas. Lets the scene
+ * page survive when individual assets are placeholder stubs in MOCK_MODE.
+ */
+class SafeAsset extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[SceneViewer] asset failed to load, skipping:", error.message);
+    }
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
 }

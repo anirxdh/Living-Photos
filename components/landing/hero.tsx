@@ -3,7 +3,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Magnetic } from "@/components/motion/magnetic";
-import { PetalRain } from "@/components/motion/petal-rain";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -52,11 +51,6 @@ export function Hero() {
             "linear-gradient(95deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 28%, rgba(0,0,0,0.1) 52%, transparent 72%), linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 22%, transparent 65%, rgba(0,0,0,0.4) 100%)",
         }}
       />
-
-      {/* Cherry blossom petals drifting across the whole viewport */}
-      <div className="absolute inset-0 z-[3]">
-        <PetalRain count={32} />
-      </div>
 
       {/* Foreground content — left-anchored so the headline doesn't overlap the tree.
           Plain div (not motion.div) — a MotionValue in style here was suppressing

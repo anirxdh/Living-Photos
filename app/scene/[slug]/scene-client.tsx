@@ -74,8 +74,8 @@ export default function SceneClient({ scene: initialScene }: { scene: Scene }) {
             <span className="italic text-[var(--color-accent)]">step inside.</span>
           </p>
           <p className="mx-auto mt-6 max-w-md text-[var(--color-foreground-secondary)]">
-            Unlock it forever for {PRICE_DISPLAY}. One-time payment, no subscription, yours to share with
-            family.
+            Unlock it forever for {PRICE_DISPLAY}. One-time payment, no subscription, yours to share
+            with family.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <UnlockButton sceneId={scene.id} />

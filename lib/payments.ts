@@ -9,12 +9,12 @@ import { adapters } from "@/lib/ai/factory";
 import { memPayments, memProcessed } from "@/lib/db/memory";
 import { sceneReadyEmail, sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
+import { PRICE_CENTS } from "@/lib/pricing";
 import { getScene, markScenePaid } from "@/lib/scenes";
 import { newId } from "@/lib/utils";
 
-// Re-export from the single source of truth so existing callers keep working.
-export { PRICE_CENTS } from "@/lib/pricing";
-import { PRICE_CENTS } from "@/lib/pricing";
+// Re-export so existing callers that pulled PRICE_CENTS from this module keep working.
+export { PRICE_CENTS };
 
 interface CheckoutArgs {
   sceneId: string;

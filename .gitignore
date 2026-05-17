@@ -56,3 +56,6 @@ tsconfig.tsbuildinfo
 # Playwright artifacts
 test-results/
 playwright-report/
+
+# Local Claude Code settings (per-user)
+.claude/settings.local.json

@@ -11,6 +11,7 @@ import { adapters } from "@/lib/ai/factory";
 import { signMockWebhook } from "@/lib/ai/stripe";
 import { env } from "@/lib/env";
 import { fulfillCheckoutEvent } from "@/lib/payments";
+import { PRICE_CENTS } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       object: {
         id: parsed.data.sessionId,
         metadata: { sceneId: parsed.data.sceneId },
-        amount_total: 1500,
+        amount_total: PRICE_CENTS,
         currency: "usd",
       },
     },

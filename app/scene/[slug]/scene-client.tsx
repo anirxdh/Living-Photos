@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import type { Scene } from "@/lib/db/schema";
+import { PRICE_DISPLAY } from "@/lib/pricing";
 
 const Viewer = dynamic(() => import("@/components/viewer/scene-viewer"), {
   ssr: false,
@@ -73,7 +74,7 @@ export default function SceneClient({ scene: initialScene }: { scene: Scene }) {
             <span className="italic text-[var(--color-accent)]">step inside.</span>
           </p>
           <p className="mx-auto mt-6 max-w-md text-[var(--color-foreground-secondary)]">
-            Unlock it forever for $15. One-time payment, no subscription, yours to share with
+            Unlock it forever for {PRICE_DISPLAY}. One-time payment, no subscription, yours to share with
             family.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -116,7 +117,7 @@ function UnlockButton({ sceneId }: { sceneId: string }) {
   }
   return (
     <Button onClick={unlock} disabled={loading} size="lg" variant="primary" testId="unlock-button">
-      {loading ? "Opening checkout…" : "Unlock memory — $15"}
+      {loading ? "Opening checkout…" : `Unlock memory — ${PRICE_DISPLAY}`}
     </Button>
   );
 }

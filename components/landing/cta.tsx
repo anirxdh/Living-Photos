@@ -3,6 +3,7 @@
 import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
+import { PRICE_DISPLAY } from "@/lib/pricing";
 
 export function CTA() {
   return (
@@ -25,7 +26,7 @@ export function CTA() {
         </Reveal>
         <Reveal delay={0.15}>
           <p className="mx-auto mt-8 max-w-xl text-[var(--color-foreground-secondary)]">
-            One photo. Five minutes. $15. Yours forever.
+            One photo. Five minutes. {PRICE_DISPLAY}. Yours forever.
           </p>
         </Reveal>
         <Reveal delay={0.3}>

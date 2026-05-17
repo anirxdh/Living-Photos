@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Headline } from "@/components/ui/headline";
+import { PRICE_DISPLAY } from "@/lib/pricing";
 
 const INCLUDED = [
   "Walk through your scene on any phone or laptop",
@@ -32,7 +33,7 @@ export function Pricing() {
               <div>
                 <p className="eyebrow">Single memory</p>
                 <p className="mt-3 flex items-baseline gap-2">
-                  <span className="headline text-7xl">$15</span>
+                  <span className="headline text-7xl">{PRICE_DISPLAY}</span>
                   <span className="text-sm text-[var(--color-foreground-muted)]">
                     once · no subscription
                   </span>

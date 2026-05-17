@@ -12,7 +12,9 @@ import { env } from "@/lib/env";
 import { getScene, markScenePaid } from "@/lib/scenes";
 import { newId } from "@/lib/utils";
 
-export const PRICE_CENTS = 1500;
+// Re-export from the single source of truth so existing callers keep working.
+export { PRICE_CENTS } from "@/lib/pricing";
+import { PRICE_CENTS } from "@/lib/pricing";
 
 interface CheckoutArgs {
   sceneId: string;

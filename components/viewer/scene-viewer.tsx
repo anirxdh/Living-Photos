@@ -1,10 +1,17 @@
 "use client";
 
-import { CameraControls, Environment, Html, useGLTF } from "@react-three/drei";
+import {
+  CameraControls,
+  type CameraControls as CameraControlsImpl,
+  Html,
+  useGLTF,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Component, type ReactNode, Suspense, useEffect, useState } from "react";
+import { Component, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import type { Scene } from "@/lib/db/schema";
 import { SplatRenderer } from "./splat-renderer";
+import { WasdControls } from "./wasd-controls";
 
 interface Props {
   scene: Scene;
@@ -39,7 +46,12 @@ export default function SceneViewer({ scene }: Props) {
   // Mobile devices get the low-poly splat tier to avoid Safari WebGL crashes
   // on heavy worlds. Falls back to full-res on desktop.
   const splatUrl = isMobile && scene.spzUrlLowPoly ? scene.spzUrlLowPoly : scene.spzUrl;
-  const meshUrls = (scene.meshes ?? []).filter((m) => m.url.toLowerCase().endsWith(".glb"));
+  // Hide mesh fixtures for now — the mock pipeline emits a Khronos Box.glb
+  // placeholder that visually competes with the splat. Real Hunyuan3D output
+  // (in real mode) renders fine; the placeholder just looks bad in demo.
+  const meshUrls = (scene.meshes ?? []).filter(
+    (m) => m.url.toLowerCase().endsWith(".glb") && !m.url.includes("/fixtures/"),
+  );
   const isDemoMode = !splatUrl && meshUrls.length === 0;
 
   return (
@@ -66,7 +78,10 @@ export default function SceneViewer({ scene }: Props) {
           // the canvas stayed black.
           frameloop="always"
           gl={{ antialias: false, alpha: false, powerPreference: "high-performance" }}
-          camera={{ position: [0, 1.5, 3], fov: 50 }}
+          // Start the camera INSIDE the room (just left of center, at standing
+          // height) looking forward. Splats from Marble are roughly metric so
+          // these XYZ units are ~meters.
+          camera={{ position: [0, 1.4, 0], fov: 65 }}
         >
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
@@ -83,13 +98,11 @@ export default function SceneViewer({ scene }: Props) {
               </SafeAsset>
             ))}
           </Suspense>
-          <Environment preset="apartment" />
-          <CameraControls
-            minDistance={1}
-            maxDistance={8}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 1.8}
-          />
+          {/* Drei's Environment preset loads a CDN-hosted HDRI which fails
+              under COEP=credentialless (the cross-origin fetch + the broken-
+              image fallback you see in the viewer). Splat-only scenes don't
+              need an env map anyway — the splat itself carries color. */}
+          <SceneControls />
         </Canvas>
       </div>
       {scene.ambientSfxUrl && (
@@ -101,7 +114,10 @@ export default function SceneViewer({ scene }: Props) {
         <audio src={scene.narrationUrl} autoPlay className="hidden" />
       )}
       <p className="mt-3 text-center text-sm text-muted-foreground">
-        Drag to look around · scroll / pinch to move closer
+        <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">W A S D</kbd> walk ·{" "}
+        <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">drag</kbd> look ·{" "}
+        <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">scroll</kbd> zoom ·{" "}
+        <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">shift</kbd> faster
       </p>
     </div>
   );
@@ -118,6 +134,42 @@ function LoadingHtml() {
 function SceneMesh({ url }: { url: string }) {
   const { scene } = useGLTF(url);
   return <primitive object={scene} />;
+}
+
+/** Drag-to-look (CameraControls) + WASD-to-walk (via the controls ref).
+ *  Wraps them together so WasdControls can drive CameraControls' API
+ *  (truck/forward) instead of fighting it by mutating camera.position. */
+function SceneControls() {
+  const controls = useRef<CameraControlsImpl | null>(null);
+
+  // Soft virtual room boundary — splats have no geometry so there's no real
+  // collision. Without this, WASD walks straight through walls. The box is
+  // sized for typical Marble interior scale (~6m × 4m room with some
+  // breathing room). Real production: use Marble's collider_mesh_url for
+  // raycast-based collision (planned V2).
+  useEffect(() => {
+    const c = controls.current;
+    if (!c) return;
+    const box = new THREE.Box3(
+      new THREE.Vector3(-3.5, 0.3, -3.5),
+      new THREE.Vector3(3.5, 2.5, 3.5),
+    );
+    c.setBoundary(box);
+  }, []);
+
+  return (
+    <>
+      <CameraControls
+        ref={controls}
+        // No min/max polar — let users look up at ceilings + down at floors.
+        minDistance={0.001}
+        maxDistance={50}
+        // Disable click-truck so accidental clicks don't teleport you.
+        mouseButtons={{ left: 1, middle: 8, right: 2, wheel: 16 }}
+      />
+      <WasdControls controlsRef={controls} />
+    </>
+  );
 }
 
 /**

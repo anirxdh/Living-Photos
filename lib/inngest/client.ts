@@ -30,17 +30,24 @@ const _globals = globalThis as unknown as {
 if (!_globals.__livingPhotosSentInngestEvents) _globals.__livingPhotosSentInngestEvents = [];
 const sentEvents: Array<{ name: string; data: unknown }> = _globals.__livingPhotosSentInngestEvents;
 
+/** True if we should bypass Inngest cloud and run the pipeline locally:
+ *  - MOCK_MODE → using mock adapters, no cloud needed
+ *  - real mode but no INNGEST_EVENT_KEY → cloud isn't configured; run real
+ *    adapters inline so the dev/demo loop works without an Inngest account. */
+const useLocalPipeline = env.MOCK_MODE || !env.INNGEST_EVENT_KEY;
+
 export const inngest = new Inngest({
   id: "living-photos",
   schemas: new EventSchemas().fromRecord<Events>(),
-  // In MOCK_MODE we don't talk to the Inngest cloud — set a dev event key.
-  eventKey: env.MOCK_MODE ? "mock-dev-key" : env.INNGEST_EVENT_KEY || undefined,
+  // When using the local pipeline path we still want a string here so the SDK
+  // doesn't refuse to construct; the .send override below intercepts before
+  // any cloud call happens.
+  eventKey: useLocalPipeline ? "local-dev-key" : env.INNGEST_EVENT_KEY,
 });
 
-// In MOCK_MODE, swap `send` for a local recorder AND run the matching pipeline
-// directly (no Inngest cloud roundtrip). Fire-and-forget so the POST /api/scenes
-// response isn't blocked on the ~1 sec mock generation.
-if (env.MOCK_MODE) {
+// Local-pipeline path: swap `send` for a recorder + direct invocation of the
+// matching pipeline function. Fire-and-forget so POST /api/scenes returns fast.
+if (useLocalPipeline) {
   const proto = Object.getPrototypeOf(inngest) as { send?: unknown };
   proto.send = async (
     args: { name: string; data: unknown } | Array<{ name: string; data: unknown }>,
@@ -53,8 +60,8 @@ if (env.MOCK_MODE) {
         // Lazy-import to avoid circular module loading at top level
         import("./mock-pipeline")
           .then((m) => m.runMockScenePipeline(data.sceneId, data.photoUrl))
-          .catch(() => {
-            /* swallow — scene stays in failed/pending; UI poll surfaces it */
+          .catch((err) => {
+            console.error(`[pipeline] ${data.sceneId} crashed:`, err);
           });
       }
     }

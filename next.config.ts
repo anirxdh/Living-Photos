@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
     "@sparkjsdev/spark",
     "@sparkjsdev/spark-react-r3f",
   ],
-  // Note: Next.js 16 removed top-level `eslint` config; lint is now decoupled
-  // from build. We use Biome anyway so this is moot.
+  // Skip running the build-time eslint phase — we use Biome
+  eslint: { ignoreDuringBuilds: true },
   // Sentry / PostHog are wired via instrumentation hooks; keep typed-routes off for now
   typedRoutes: false,
   // Spark.js v2 spawns a Worker that uses WASM + SharedArrayBuffer. Modern

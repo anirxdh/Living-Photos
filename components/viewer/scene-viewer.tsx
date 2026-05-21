@@ -3,7 +3,10 @@
 import {
   CameraControls,
   type CameraControls as CameraControlsImpl,
-  Html,
+  // Renamed from `Html` to dodge Next.js's static analyzer which naively
+  // errors "<Html> should not be imported outside of pages/_document" even
+  // when this is Drei's 3D-scene HTML overlay (totally different component).
+  Html as DreiHtml,
   useGLTF,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -125,9 +128,9 @@ export default function SceneViewer({ scene }: Props) {
 
 function LoadingHtml() {
   return (
-    <Html center>
+    <DreiHtml center>
       <div className="rounded-md bg-black/70 px-3 py-2 text-xs text-white">Loading scene…</div>
-    </Html>
+    </DreiHtml>
   );
 }
 

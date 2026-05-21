@@ -18,7 +18,7 @@ Built for [ElevenHacks 2026](https://elevenhacks.com) — the Stripe + ElevenLab
 
 ### 🎬 [**Live demo → living-photos-rust.vercel.app**](https://living-photos-rust.vercel.app/)
 
-🤝 **Waitlist-only** — [DM on LinkedIn](https://www.linkedin.com/in/agent-eleven-a695443b9/) to get a Living Photo built for you within 24h
+🤝 **Waitlist-only** — [DM on X (@anirxdhv)](https://x.com/anirxdhv) to get a Living Photo built for you within 24h
 
 </div>
 
@@ -303,7 +303,7 @@ Built with care for the people whose voices we wish we could still hear.
 
 ### 🎬 [Live demo → living-photos-rust.vercel.app](https://living-photos-rust.vercel.app/)
 
-[GitHub](https://github.com/anirxdh/Living-Photos) · [LinkedIn (waitlist)](https://www.linkedin.com/in/agent-eleven-a695443b9/) · [X / Twitter](https://x.com/anirxdhv)
+[GitHub](https://github.com/anirxdh/Living-Photos) · [X / Twitter (@anirxdhv) — waitlist DMs](https://x.com/anirxdhv)
 
 *Built by [Anirudh Vasudevan](https://github.com/anirxdh) · May 2026 · San Francisco*
 

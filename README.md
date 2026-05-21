@@ -16,6 +16,10 @@ Built for [ElevenHacks 2026](https://elevenhacks.com) — the Stripe + ElevenLab
 [![Tests](https://img.shields.io/badge/tests-122%20passing-success)](./tests)
 [![License](https://img.shields.io/badge/license-Source%20Available-red)](./LICENSE)
 
+### 🎬 [**Live demo → living-photos-rust.vercel.app**](https://living-photos-rust.vercel.app/)
+
+🤝 **Waitlist-only** — [DM on LinkedIn](https://www.linkedin.com/in/agent-eleven-a695443b9/) to get a Living Photo built for you within 24h
+
 </div>
 
 ---
@@ -296,6 +300,10 @@ This project orchestrates the work of incredible teams:
 Built with care for the people whose voices we wish we could still hear.
 
 <div align="center">
+
+### 🎬 [Live demo → living-photos-rust.vercel.app](https://living-photos-rust.vercel.app/)
+
+[GitHub](https://github.com/anirxdh/Living-Photos) · [LinkedIn (waitlist)](https://www.linkedin.com/in/agent-eleven-a695443b9/) · [X / Twitter](https://x.com/anirxdhv)
 
 *Built by [Anirudh Vasudevan](https://github.com/anirxdh) · May 2026 · San Francisco*
 

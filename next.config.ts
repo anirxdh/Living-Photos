@@ -6,14 +6,19 @@ const nextConfig: NextConfig = {
     // Server actions body size for upload (we use blob signed URLs, so this stays small)
     serverActions: { bodySizeLimit: "10mb" },
   },
-  // Three.js + Spark.js are client-only; transpile them for App Router
+  // Three.js + Spark.js are client-only — transpile for App Router
   transpilePackages: [
     "three",
     "@react-three/fiber",
-    "@react-three/drei",
     "@sparkjsdev/spark",
     "@sparkjsdev/spark-react-r3f",
   ],
+  // Keep Drei OUT of server-side bundles. Drei's internal <Html> component
+  // (used for in-3D HTML overlays) is unrelated to next/document's <Html>,
+  // but Next.js's static analyzer flags it during prerender. Marking Drei as
+  // external prevents it from being bundled into server chunks at all — it
+  // only loads on the client where it actually runs.
+  serverExternalPackages: ["@react-three/drei"],
   // Skip running the build-time eslint phase — we use Biome
   eslint: { ignoreDuringBuilds: true },
   // Sentry / PostHog are wired via instrumentation hooks; keep typed-routes off for now

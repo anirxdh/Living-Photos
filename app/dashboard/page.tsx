@@ -27,8 +27,6 @@ function Lock({ className }: { className?: string }) {
   );
 }
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "My memories — Living Photos",
 };

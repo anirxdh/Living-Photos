@@ -2,8 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Full static export — produces pure HTML/CSS/JS in /out.
+  // No SSR, no API routes deployed, no prerender complications.
+  // The waitlist gate blocks all generation flows in production anyway, so
+  // we don't need the API surface live. Local dev still has everything.
+  output: "export",
+  // Required for output: 'export' — disables Next/Image optimization runtime
+  images: { unoptimized: true },
   experimental: {
-    // Server actions body size for upload (we use blob signed URLs, so this stays small)
     serverActions: { bodySizeLimit: "10mb" },
   },
   // Three.js + Spark.js are client-only — transpile for App Router

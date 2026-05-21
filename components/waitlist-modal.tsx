@@ -80,7 +80,7 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
         <div className="mt-8 space-y-3">
           {/* DM path */}
           <a
-            href="https://www.linkedin.com/in/anirxdh/"
+            href="https://www.linkedin.com/in/agent-eleven-a695443b9/"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-start gap-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all hover:border-[var(--color-foreground-secondary)] hover:bg-[var(--color-surface-elevated)]"

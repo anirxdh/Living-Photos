@@ -7,7 +7,7 @@
 export function WaitlistPill() {
   return (
     <a
-      href="https://www.linkedin.com/in/anirxdh/"
+      href="https://www.linkedin.com/in/agent-eleven-a695443b9/"
       target="_blank"
       rel="noopener noreferrer"
       className="group mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-4 py-2 text-xs backdrop-blur-md transition-all hover:bg-black/60 hover:border-white/50"

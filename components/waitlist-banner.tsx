@@ -15,7 +15,7 @@ export function WaitlistBanner() {
           <p className="mt-1.5 text-sm text-[var(--color-foreground-secondary)]">
             Each Living Photo costs ~$0.40 in API credits. While we scale, generation is gated.{" "}
             <a
-              href="https://www.linkedin.com/in/anirxdh/"
+              href="https://www.linkedin.com/in/agent-eleven-a695443b9/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--color-accent)] underline hover:text-[var(--color-foreground)]"

@@ -2,9 +2,18 @@
 
 import { useEffect } from "react";
 
-/** Mock-mode helper: when the user returns from Stripe Checkout, ping the
- * mock-fulfill endpoint so the scene is marked paid. In production the real
- * Stripe webhook would handle this server-side independently. */
+/**
+ * On return from Stripe Checkout, mark the scene as paid:
+ *
+ *  1. Try /api/stripe/mock-fulfill — works when MOCK_MODE=true (the
+ *     fully-mocked demo flow used by `pnpm seed` and Playwright tests).
+ *  2. If that 400s (real Stripe mode, no MOCK_MODE), fall back to
+ *     /api/debug/demo-fulfill — dev-only unlock so the video-recording
+ *     flow works without `stripe listen` forwarding webhooks to localhost.
+ *
+ * Production never reaches either path: the real Stripe webhook fulfills
+ * the order server-side and demo-fulfill refuses in production.
+ */
 export default function SuccessFulfill({
   sceneId,
   sessionId,
@@ -13,14 +22,31 @@ export default function SuccessFulfill({
   sessionId: string;
 }) {
   useEffect(() => {
-    if (!sceneId || !sessionId) return;
-    fetch("/api/stripe/mock-fulfill", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ sceneId, sessionId }),
-    }).catch(() => {
-      // non-fatal; real webhook will catch up
-    });
+    if (!sceneId) return;
+
+    async function fulfill() {
+      // First try the mock-mode endpoint
+      if (sessionId) {
+        const mockRes = await fetch("/api/stripe/mock-fulfill", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ sceneId, sessionId }),
+        }).catch(() => null);
+        if (mockRes?.ok) return; // mock fulfilled, we're done
+      }
+
+      // Fallback: dev demo-unlock (works without MOCK_MODE)
+      await fetch("/api/debug/demo-fulfill", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sceneId }),
+      }).catch(() => {
+        // non-fatal; in production the real webhook handles this
+      });
+    }
+
+    fulfill();
   }, [sceneId, sessionId]);
+
   return null;
 }

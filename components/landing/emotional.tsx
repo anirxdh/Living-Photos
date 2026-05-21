@@ -2,6 +2,8 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { CursorReveal } from "@/components/motion/cursor-reveal";
+import { MouseParallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
 
 export function Emotional() {
@@ -27,6 +29,70 @@ export function Emotional() {
           }}
         />
       </motion.div>
+
+      {/* Left branch — autumn by default; cursor reveals a cherry-blossom tint */}
+      <MouseParallax
+        intensity={18}
+        className="absolute -left-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
+      >
+        <CursorReveal
+          radius={300}
+          className="h-full w-full"
+          base={
+            <div
+              className="h-full w-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/images/branch-left.jpg')",
+                maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+              }}
+            />
+          }
+          reveal={
+            <div
+              className="h-full w-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/images/branch-left.jpg')",
+                maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
+                filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
+              }}
+            />
+          }
+        />
+      </MouseParallax>
+
+      {/* Right branch — mirrored */}
+      <MouseParallax
+        intensity={22}
+        className="absolute -right-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
+      >
+        <CursorReveal
+          radius={300}
+          className="h-full w-full"
+          base={
+            <div
+              className="h-full w-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/images/branch-right.jpg')",
+                maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+              }}
+            />
+          }
+          reveal={
+            <div
+              className="h-full w-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/images/branch-right.jpg')",
+                maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
+                filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
+              }}
+            />
+          }
+        />
+      </MouseParallax>
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <Reveal>

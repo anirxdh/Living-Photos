@@ -4,10 +4,15 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { WaitlistModal } from "@/components/waitlist-modal";
 
 const ACCEPT = { "image/jpeg": [], "image/png": [], "image/webp": [] };
 const MAX_BYTES = 25 * 1024 * 1024;
 const VOICE_KEY = "livingphotos.voice";
+
+/** Flip to true to allow real generation (currently waitlist-only to protect
+ *  API credits — visitors see the WaitlistModal instead of triggering upload). */
+const ALLOW_GENERATION = false;
 
 type UploadState = "idle" | "uploading" | "saving" | "error";
 interface SavedVoice {
@@ -25,6 +30,7 @@ export default function CreateClient() {
   const [state, setState] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [voice, setVoice] = useState<SavedVoice | null>(null);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   // Load a previously-cloned voice from localStorage (set on the /voice page
   // when the consent flow succeeds). The voice clone is tied to the user's
@@ -71,6 +77,12 @@ export default function CreateClient() {
   async function submit() {
     if (!file) {
       setError("Pick a photo first.");
+      return;
+    }
+    if (!ALLOW_GENERATION) {
+      // Waitlist gate — show modal instead of actually consuming API credits.
+      // Flip ALLOW_GENERATION to true to re-enable real generation.
+      setWaitlistOpen(true);
       return;
     }
     setError(null);
@@ -274,6 +286,8 @@ export default function CreateClient() {
             ? "Preparing your memory…"
             : "Bring this memory to life"}
       </button>
+
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </motion.div>
   );
 }

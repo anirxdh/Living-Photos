@@ -2,6 +2,7 @@ import { Footer } from "@/components/landing/footer";
 import { Nav } from "@/components/landing/nav";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Headline } from "@/components/ui/headline";
+import { WaitlistBanner } from "@/components/waitlist-banner";
 import CreateClient from "./create-client";
 
 export const metadata = {
@@ -24,6 +25,7 @@ export default function CreatePage() {
             scene in about five minutes.
           </p>
           <div className="mt-12">
+            <WaitlistBanner />
             <CreateClient />
           </div>
         </div>

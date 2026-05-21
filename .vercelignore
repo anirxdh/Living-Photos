@@ -1,0 +1,25 @@
+# Working/internal demo videos — too big and not user-facing
+public/app-demo/
+
+# MOCK_MODE fixtures — production runs in real mode, doesn't need these
+public/fixtures/
+
+# Working audio assets — only the per-page mixes are used in the video; raw
+# sources don't need to ship to production
+audio/
+
+# Test artifacts
+playwright-report/
+test-results/
+coverage/
+
+# Dev planning / scratch
+.planning/
+scripts/generate-*.ts
+scripts/mix-*.ts
+scripts/enhance-*.ts
+scripts/prepend-*.ts
+scripts/merge-*.ts
+scripts/add-audio-*.ts
+scripts/find-kid-voices.ts
+scripts/seed-demo.ts

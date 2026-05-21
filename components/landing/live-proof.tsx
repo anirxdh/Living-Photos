@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CursorReveal } from "@/components/motion/cursor-reveal";
-import { MouseParallax } from "@/components/motion/parallax";
 import { Reveal } from "@/components/motion/reveal";
 import { Tilt3D } from "@/components/motion/tilt-3d";
 import { BrowserFrame } from "@/components/ui/browser-frame";
@@ -10,10 +8,8 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { Headline } from "@/components/ui/headline";
 
 /**
- * Synex-style "product floating between organic branches" section.
- *
- *   Layers: mossy branches at edges, browser mockup centered, floating cards
- *   drift around it. Mouse near branches → composition tilts subtly.
+ * Product showcase: browser mockup centered with floating data cards.
+ * Branch backgrounds moved to the Emotional section to frame the quote.
  */
 export function LiveProof() {
   return (
@@ -32,72 +28,6 @@ export function LiveProof() {
 
         {/* Layered composition */}
         <div className="relative">
-          {/* Left branch — autumn by default; cursor reveals a cherry-blossom
-              version of the same branch in a soft halo (seasons bloom under your hand) */}
-          <MouseParallax
-            intensity={18}
-            className="absolute -left-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
-          >
-            <CursorReveal
-              radius={300}
-              className="h-full w-full"
-              base={
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/branch-left.jpg')",
-                    maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-                    WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-                  }}
-                />
-              }
-              reveal={
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/branch-left.jpg')",
-                    maskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-                    WebkitMaskImage: "linear-gradient(to right, black 55%, transparent 100%)",
-                    /* "Cherry blossom" treatment — swap for a real spring image when ready */
-                    filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
-                  }}
-                />
-              }
-            />
-          </MouseParallax>
-
-          {/* Right branch — same seasonal swap, mirrored */}
-          <MouseParallax
-            intensity={22}
-            className="absolute -right-20 top-1/2 z-[1] hidden h-[120%] w-[44vw] max-w-[640px] -translate-y-1/2 md:block"
-          >
-            <CursorReveal
-              radius={300}
-              className="h-full w-full"
-              base={
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/branch-right.jpg')",
-                    maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-                    WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-                  }}
-                />
-              }
-              reveal={
-                <div
-                  className="h-full w-full bg-cover bg-center"
-                  style={{
-                    backgroundImage: "url('/images/branch-right.jpg')",
-                    maskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-                    WebkitMaskImage: "linear-gradient(to left, black 55%, transparent 100%)",
-                    filter: "hue-rotate(280deg) saturate(1.6) brightness(1.08)",
-                  }}
-                />
-              }
-            />
-          </MouseParallax>
-
           {/* Centerpiece — Tilt3D so the composition responds to mouse position */}
           <Reveal delay={0.25}>
             <Tilt3D max={6} perspective={1500} className="relative z-10 mx-auto max-w-3xl">

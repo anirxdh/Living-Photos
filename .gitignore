@@ -17,6 +17,11 @@ dist/
 *.pem
 .vercel
 
+# Working/generated demo assets — too big to commit; stay on disk locally
+public/app-demo/
+public/fixtures/
+audio/
+
 # Debug
 npm-debug.log*
 yarn-debug.log*

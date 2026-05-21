@@ -51,7 +51,7 @@ const schema = z
     NEXT_PUBLIC_POSTHOG_HOST: z.string().default("https://us.i.posthog.com"),
 
     RESEND_API_KEY: z.string().optional().default(""),
-    RESEND_FROM_EMAIL: z.string().default("Living Photos <hello@livingphotos.app>"),
+    RESEND_FROM_EMAIL: z.string().default("Living Photos <anirudh.vasudevan@bankyfinance.com>"),
   })
   .transform((raw) => ({
     ...raw,

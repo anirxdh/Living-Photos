@@ -56,7 +56,7 @@ function validatePathname(
   }
   const prefixes = allowedPrefixes();
   if (!prefixes.some((p) => pathname.startsWith(p))) {
-    return { ok: false, error: "pathname must start with " + prefixes.join(" | ") };
+    return { ok: false, error: `pathname must start with ${prefixes.join(" | ")}` };
   }
   return { ok: true, pathname };
 }

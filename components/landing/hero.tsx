@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
+import { WaitlistPill } from "@/components/waitlist-pill";
 
 /**
  * Cinematic single-image hero — exactly one viewport tall.
@@ -27,19 +28,22 @@ export function Hero() {
       ref={ref}
       className="relative flex h-screen min-h-[640px] w-full flex-col justify-center overflow-hidden bg-[#9bb8c8]"
     >
-      {/* Full-bleed painted scene with subtle Ken Burns drift. Anchored RIGHT so the
-          cherry blossom tree stays in view; the empty middle of the image sits behind
-          the headline on the left. */}
+      {/* Full-bleed looping video background with subtle parallax drift on scroll.
+          Muted + autoplay + playsInline is required for mobile Safari to actually
+          loop without user gesture. Video carries its own motion so we don't need
+          the old Ken Burns animation. */}
       <motion.div aria-hidden className="absolute inset-0 z-0" style={{ y: imageY }}>
-        <div
-          className="absolute inset-0 bg-cover"
-          style={{
-            backgroundImage: "url('/images/hero-new.jpg')",
-            backgroundPosition: "right center",
-            animation: "ken-burns 45s ease-in-out infinite alternate",
-            transformOrigin: "80% 50%",
-          }}
-        />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/images/hero-video-poster.jpg"
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src="/images/hero-video-bg.mp4" type="video/mp4" />
+        </video>
       </motion.div>
 
       {/* Left-side vignette so the white serif headline pops against the bright sky */}
@@ -108,6 +112,10 @@ export function Hero() {
               See how it works
             </Button>
           </Magnetic>
+        </div>
+
+        <div className="hero-fade-in" style={{ animationDelay: "1.3s" }}>
+          <WaitlistPill />
         </div>
       </div>
     </section>

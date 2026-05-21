@@ -31,10 +31,10 @@ export default function AupPage() {
               Report a scene via the "Report" button on any share page. Verified violations are
               removed within one hour. DMCA notices may be sent to{" "}
               <a
-                href="mailto:dmca@livingphotos.app"
+                href="mailto:anirudh.vasudevan@bankyfinance.com"
                 className="text-[var(--color-accent)] underline hover:text-[var(--color-foreground)]"
               >
-                dmca@livingphotos.app
+                anirudh.vasudevan@bankyfinance.com
               </a>
               .
             </p>

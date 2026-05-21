@@ -29,6 +29,24 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     }
     rafId = requestAnimationFrame(raf);
 
+    // Hash-on-mount: when arriving via `/#how-it-works` (cross-page navigation),
+    // Next.js sets the URL but the native scroll either doesn't happen or fights
+    // Lenis. Tell Lenis to scroll to the hash target once everything is settled.
+    if (window.location.hash && window.location.hash.length > 1) {
+      const hashEl = document.querySelector(window.location.hash);
+      if (hashEl) {
+        // Wait one frame so the page has laid out before Lenis measures positions.
+        requestAnimationFrame(() => {
+          lenis.scrollTo(hashEl as HTMLElement, {
+            offset: -80,
+            duration: 1.4,
+            easing: (t) => 1 - (1 - t) ** 3,
+            immediate: false,
+          });
+        });
+      }
+    }
+
     // Hand anchor-link clicks (e.g. <a href="#how-it-works">) to Lenis so they
     // scroll with the same buttery easing as the wheel. Without this, Next.js's
     // <Link> + the browser do an instant jump and fight with Lenis's transform.

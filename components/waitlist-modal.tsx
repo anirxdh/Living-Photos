@@ -91,13 +91,13 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
               <p className="mt-1 text-sm text-[var(--color-foreground-secondary)]">
                 DM me on <span className="text-[var(--color-accent)]">LinkedIn</span> or{" "}
                 <a
-                  href="https://x.com/anirxdh"
+                  href="https://x.com/anirxdhv"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--color-accent)] underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  X (@anirxdh)
+                  X (@anirxdhv)
                 </a>
                 . I'll personally build yours within 24 hours.
               </p>

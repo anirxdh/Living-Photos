@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
 import { WaitlistPill } from "@/components/waitlist-pill";
@@ -17,11 +17,38 @@ import { WaitlistPill } from "@/components/waitlist-pill";
  */
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+
+  // iOS Safari sometimes suppresses autoplay even with all the right attributes
+  // (Low Power Mode is a common culprit). Force-play the video programmatically
+  // on mount so the play-button overlay never appears on mobile.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true; // ensure muted is on the DOM element, not just JSX
+    const tryPlay = () =>
+      v.play().catch(() => {
+        /* user gesture required — fine */
+      });
+    tryPlay();
+    // Retry on the first user interaction in case Low Power Mode blocked autoplay
+    const onFirstTouch = () => {
+      tryPlay();
+      window.removeEventListener("touchstart", onFirstTouch);
+      window.removeEventListener("click", onFirstTouch);
+    };
+    window.addEventListener("touchstart", onFirstTouch, { passive: true });
+    window.addEventListener("click", onFirstTouch);
+    return () => {
+      window.removeEventListener("touchstart", onFirstTouch);
+      window.removeEventListener("click", onFirstTouch);
+    };
+  }, []);
 
   return (
     <section
@@ -34,13 +61,22 @@ export function Hero() {
           the old Ken Burns animation. */}
       <motion.div aria-hidden className="absolute inset-0 z-0" style={{ y: imageY }}>
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
+          controls={false}
+          disablePictureInPicture
+          disableRemotePlayback
           preload="auto"
           poster="/images/hero-video-poster.jpg"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          // Legacy mobile browser attributes — set via spread to bypass React's type checker
+          {...({
+            "webkit-playsinline": "true",
+            "x5-playsinline": "true",
+          } as Record<string, string>)}
         >
           <source src="/images/hero-video-bg.mp4" type="video/mp4" />
         </video>

@@ -80,7 +80,7 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
         <div className="mt-8 space-y-3">
           {/* DM path */}
           <a
-            href="https://www.linkedin.com/in/anirxdh/"
+            href="https://x.com/anirxdhv"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-start gap-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all hover:border-[var(--color-foreground-secondary)] hover:bg-[var(--color-surface-elevated)]"
@@ -89,17 +89,8 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
             <div className="flex-1">
               <p className="font-medium text-[var(--color-foreground)]">Get one built for you</p>
               <p className="mt-1 text-sm text-[var(--color-foreground-secondary)]">
-                DM me on <span className="text-[var(--color-accent)]">LinkedIn</span> or{" "}
-                <a
-                  href="https://x.com/anirxdh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-accent)] underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  X (@anirxdh)
-                </a>
-                . I'll personally build yours within 24 hours.
+                DM me on <span className="text-[var(--color-accent)]">X (@anirxdhv)</span>. I'll
+                personally build yours within 24 hours.
               </p>
             </div>
             <span className="text-[var(--color-foreground-muted)] transition-transform group-hover:translate-x-1">

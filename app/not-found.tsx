@@ -4,7 +4,13 @@ import Link from "next/link";
  * Custom 404 — minimal Server Component, no client-only motion components.
  * Replaces Next.js's auto-generated _not-found page which fails to prerender
  * when the root layout's SmoothScroll/Cursor chunks get pulled into SSR.
+ *
+ * `dynamic = 'force-dynamic'` skips prerender entirely. The Drei/Html static
+ * analyzer false-positive on the auto-generated /404 fallback hits during
+ * static export — bypassing prerender bypasses the check.
  */
+export const dynamic = "force-dynamic";
+
 export default function NotFound() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center">

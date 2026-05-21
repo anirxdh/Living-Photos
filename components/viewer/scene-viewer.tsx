@@ -3,10 +3,6 @@
 import {
   CameraControls,
   type CameraControls as CameraControlsImpl,
-  // Renamed from `Html` to dodge Next.js's static analyzer which naively
-  // errors "<Html> should not be imported outside of pages/_document" even
-  // when this is Drei's 3D-scene HTML overlay (totally different component).
-  Html as DreiHtml,
   useGLTF,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -88,7 +84,7 @@ export default function SceneViewer({ scene }: Props) {
         >
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
-          <Suspense fallback={<LoadingHtml />}>
+          <Suspense fallback={null}>
             {splatUrl?.toLowerCase().endsWith(".spz") && (
               <SafeAsset>
                 <SplatRenderer url={splatUrl} />
@@ -126,13 +122,9 @@ export default function SceneViewer({ scene }: Props) {
   );
 }
 
-function LoadingHtml() {
-  return (
-    <DreiHtml center>
-      <div className="rounded-md bg-black/70 px-3 py-2 text-xs text-white">Loading scene…</div>
-    </DreiHtml>
-  );
-}
+// LoadingHtml removed — was using Drei's <Html> which Next.js's static analyzer
+// incorrectly flagged as the next/document <Html> during prerender. Suspense
+// fallback is now null; the black canvas during load is acceptable UX.
 
 function SceneMesh({ url }: { url: string }) {
   const { scene } = useGLTF(url);

@@ -18,7 +18,7 @@ Built for [ElevenHacks 2026](https://elevenhacks.com) — the Stripe + ElevenLab
 
 ### 🎬 [**Live demo → living-photos-rust.vercel.app**](https://living-photos-rust.vercel.app/)
 
-🤝 **Waitlist-only** — [DM on X (@anirxdhv)](https://x.com/anirxdhv) to get a Living Photo built for you within 24h
+🤝 **Waitlist-only** — [DM on X (@anirxdhv)](https://x.com/agent_e11ven) to get a Living Photo built for you within 24h
 
 </div>
 

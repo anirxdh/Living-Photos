@@ -80,7 +80,7 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
         <div className="mt-8 space-y-3">
           {/* DM path */}
           <a
-            href="https://x.com/anirxdhv"
+            href="https://x.com/agent_e11ven"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-start gap-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-all hover:border-[var(--color-foreground-secondary)] hover:bg-[var(--color-surface-elevated)]"
@@ -89,7 +89,7 @@ export function WaitlistModal({ open, onClose }: { open: boolean; onClose: () =>
             <div className="flex-1">
               <p className="font-medium text-[var(--color-foreground)]">Get one built for you</p>
               <p className="mt-1 text-sm text-[var(--color-foreground-secondary)]">
-                DM me on <span className="text-[var(--color-accent)]">X (@anirxdhv)</span>. I'll
+                DM me on <span className="text-[var(--color-accent)]">X (@agent_e11ven)</span>. I'll
                 personally build yours within 24 hours.
               </p>
             </div>

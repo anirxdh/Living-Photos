@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     sourcePhotoUrl: thumbnail,
     title: title ?? world.display_name ?? "Recovered memory",
     description: world.assets?.caption?.slice(0, 1500),
-    anonymousEmail: email ?? "anirudh.vasudevan@bankyfinance.com",
+    anonymousEmail: email ?? "anirudhvasudevan11@gmail.com",
   });
 
   const updated = memScenes.update(scene.id, {

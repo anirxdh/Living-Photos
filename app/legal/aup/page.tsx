@@ -31,10 +31,10 @@ export default function AupPage() {
               Report a scene via the "Report" button on any share page. Verified violations are
               removed within one hour. DMCA notices may be sent to{" "}
               <a
-                href="mailto:anirudh.vasudevan@bankyfinance.com"
+                href="mailto:anirudhvasudevan11@gmail.com"
                 className="text-[var(--color-accent)] underline hover:text-[var(--color-foreground)]"
               >
-                anirudh.vasudevan@bankyfinance.com
+                anirudhvasudevan11@gmail.com
               </a>
               .
             </p>

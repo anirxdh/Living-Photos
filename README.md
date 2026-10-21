@@ -2,6 +2,8 @@
 
 # 🌅 Living Photos
 
+> **Write-up:** [Walking Into a Photograph with Gaussian Splats and a Cloned Voice](https://anirudhvasudevan.com/blog/living-photos-gaussian-splats/), the architecture, decisions and lessons. Built by [Anirudh Vasudevan](https://anirudhvasudevan.com/).
+
 ### *Step inside a memory you can walk through.*
 
 **Upload one old photograph. Walk into it in 3D. Hear the voice of someone you loved play softly inside the room.**
